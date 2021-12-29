@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 
+# Form implementation generated from reading ui file 'MainForm.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -67,6 +72,9 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_3.menuAction())
 
         self.retranslateUi(MainWindow)
+        # self.actionopen.triggered.connect(MainWindow.readtxt)
+        # txt点云文件读取
+        # self.actionopen.triggered.connect(MainWindow.readTxt)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
