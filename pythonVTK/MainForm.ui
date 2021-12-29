@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1192</width>
+    <height>863</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>981</width>
+      <height>801</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout"/>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1192</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="actionxin"/>
+    <addaction name="actionopen"/>
+    <addaction name="actionopenStl"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>滤波</string>
+    </property>
+    <addaction name="actionzhitong"/>
+    <addaction name="actionCropHull"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>对齐</string>
+    </property>
+    <addaction name="actioncuiduiqi"/>
+    <addaction name="actionICP"/>
+    <addaction name="actionRPS"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <widget class="QTreeView" name="treeView">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>201</width>
+       <height>821</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <action name="actionxin">
+   <property name="text">
+    <string>新建</string>
+   </property>
+  </action>
+  <action name="actionopen">
+   <property name="text">
+    <string>读取点云</string>
+   </property>
+  </action>
+  <action name="actioncuiduiqi">
+   <property name="text">
+    <string>cuiduiqi</string>
+   </property>
+  </action>
+  <action name="actionICP">
+   <property name="text">
+    <string>ICP</string>
+   </property>
+  </action>
+  <action name="actionRPS">
+   <property name="text">
+    <string>RPS</string>
+   </property>
+  </action>
+  <action name="actionzhitong">
+   <property name="text">
+    <string>zhitong</string>
+   </property>
+  </action>
+  <action name="actionCropHull">
+   <property name="text">
+    <string>CropHull</string>
+   </property>
+  </action>
+  <action name="actionopenStl">
+   <property name="text">
+    <string>读取STL</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
