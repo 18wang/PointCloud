@@ -68,6 +68,8 @@ namespace WindowsFormsApplication1
 
         vtkAreaPicker areaPicker;
         vtkPolyData selected;
+        
+        // 数据读取
         public void readData(string fileName)
         {
             points = new vtkPoints();

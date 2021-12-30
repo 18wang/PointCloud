@@ -72,9 +72,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_3.menuAction())
 
         self.retranslateUi(MainWindow)
-        # self.actionopen.triggered.connect(MainWindow.readtxt)
-        # txt点云文件读取
-        # self.actionopen.triggered.connect(MainWindow.readTxt)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

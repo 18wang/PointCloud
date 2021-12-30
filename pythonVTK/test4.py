@@ -1,197 +1,131 @@
 #!/usr/bin/env python
 
-import numpy as np
+# noinspection PyUnresolvedReferences
+import vtkmodules.vtkRenderingOpenGL2
 from vtkmodules.vtkCommonColor import vtkNamedColors
-from vtkmodules.vtkCommonComputationalGeometry import vtkParametricSpline
-from vtkmodules.vtkCommonCore import (
-    mutable,
-    vtkPoints,
-    vtkUnsignedCharArray
-)
-import vtkmodules.vtkInteractionStyle
-import vtkmodules.vtkRenderingOpenGL2
+from vtkmodules.vtkCommonCore import vtkIdTypeArray
 from vtkmodules.vtkCommonDataModel import (
-    vtkCellArray,
-    vtkCellLocator,
-    vtkPolyData,
-    vtkTriangle
+    vtkSelection,
+    vtkSelectionNode,
+    vtkUnstructuredGrid
 )
-
-from vtkmodules.vtkFiltersCore import vtkCleanPolyData
-from vtkmodules.vtkFiltersModeling import vtkLoopSubdivisionFilter
-from vtkmodules.vtkFiltersSources import vtkParametricFunctionSource
-import vtkmodules.vtkRenderingOpenGL2
+from vtkmodules.vtkFiltersCore import vtkTriangleFilter
+from vtkmodules.vtkFiltersExtraction import vtkExtractSelection
+from vtkmodules.vtkFiltersSources import vtkPlaneSource
+from vtkmodules.vtkInteractionStyle import vtkInteractorStyleTrackballCamera
 from vtkmodules.vtkRenderingCore import (
     vtkActor,
+    vtkCellPicker,
+    vtkDataSetMapper,
     vtkPolyDataMapper,
     vtkRenderWindow,
     vtkRenderWindowInteractor,
-    vtkRenderer,
+    vtkRenderer
 )
 
 
-def main():
-    named_colors = vtkNamedColors()
+# Catch mouse events
+class MouseInteractorStyle(vtkInteractorStyleTrackballCamera):
+    def __init__(self, data):
+        self.AddObserver('LeftButtonPressEvent', self.left_button_press_event)
+        self.data = data
+        self.selected_mapper = vtkDataSetMapper()
+        self.selected_actor = vtkActor()
 
-    # Make a 32 x 32 grid.
-    size = 32
+    def left_button_press_event(self, obj, event):
+        colors = vtkNamedColors()
 
-    # Define z values for the topography.
-    # Comment out the following line if you want a different random
-    #  distribution each time the script is run.
-    np.random.seed(3)
-    topography = np.random.randint(0, 5, (size, size))
+        # Get the location of the click (in window coordinates)
+        pos = self.GetInteractor().GetEventPosition()
 
-    # Define points, triangles and colors
-    colors = vtkUnsignedCharArray()
-    colors.SetNumberOfComponents(3)
-    points = vtkPoints()
-    triangles = vtkCellArray()
+        picker = vtkCellPicker()
+        picker.SetTolerance(0.0005)
 
-    # Build the meshgrid manually.
-    count = 0
-    for i in range(size - 1):
-        for j in range(size - 1):
-            z1 = topography[i][j]
-            z2 = topography[i][j + 1]
-            z3 = topography[i + 1][j]
+        # Pick from this location.
+        picker.Pick(pos[0], pos[1], 0, self.GetDefaultRenderer())
 
-            # Triangle 1
-            points.InsertNextPoint(i, j, z1)
-            points.InsertNextPoint(i, (j + 1), z2)
-            points.InsertNextPoint((i + 1), j, z3)
+        world_position = picker.GetPickPosition()
+        print(f'Cell id is: {picker.GetCellId()}')
 
-            triangle = vtkTriangle()
-            triangle.GetPointIds().SetId(0, count)
-            triangle.GetPointIds().SetId(1, count + 1)
-            triangle.GetPointIds().SetId(2, count + 2)
+        if picker.GetCellId() != -1:
+            print(f'Pick position is: ({world_position[0]:.6g}, {world_position[1]:.6g}, {world_position[2]:.6g})')
 
-            triangles.InsertNextCell(triangle)
+            ids = vtkIdTypeArray()
+            ids.SetNumberOfComponents(1)
+            ids.InsertNextValue(picker.GetCellId())
 
-            z1 = topography[i][j + 1]
-            z2 = topography[i + 1][j + 1]
-            z3 = topography[i + 1][j]
+            selection_node = vtkSelectionNode()
+            selection_node.SetFieldType(vtkSelectionNode.CELL)
+            selection_node.SetContentType(vtkSelectionNode.INDICES)
+            selection_node.SetSelectionList(ids)
 
-            # Triangle 2
-            points.InsertNextPoint(i, (j + 1), z1)
-            points.InsertNextPoint((i + 1), (j + 1), z2)
-            points.InsertNextPoint((i + 1), j, z3)
+            selection = vtkSelection()
+            selection.AddNode(selection_node)
 
-            triangle = vtkTriangle()
-            triangle.GetPointIds().SetId(0, count + 3)
-            triangle.GetPointIds().SetId(1, count + 4)
-            triangle.GetPointIds().SetId(2, count + 5)
+            extract_selection = vtkExtractSelection()
+            extract_selection.SetInputData(0, self.data)
+            extract_selection.SetInputData(1, selection)
+            extract_selection.Update()
 
-            count += 6
+            # In selection
+            selected = vtkUnstructuredGrid()
+            selected.ShallowCopy(extract_selection.GetOutput())
 
-            triangles.InsertNextCell(triangle)
+            print(f'Number of points in the selection: {selected.GetNumberOfPoints()}')
+            print(f'Number of cells in the selection : {selected.GetNumberOfCells()}')
 
-            # Add some color.
-            r = [int(i / float(size) * 255), int(j / float(size) * 255), 0]
-            colors.InsertNextTypedTuple(r)
-            colors.InsertNextTypedTuple(r)
-            colors.InsertNextTypedTuple(r)
-            colors.InsertNextTypedTuple(r)
-            colors.InsertNextTypedTuple(r)
-            colors.InsertNextTypedTuple(r)
+            self.selected_mapper.SetInputData(selected)
+            self.selected_actor.SetMapper(self.selected_mapper)
+            self.selected_actor.GetProperty().EdgeVisibilityOn()
+            self.selected_actor.GetProperty().SetColor(colors.GetColor3d('Tomato'))
 
-    # Create a polydata object.
-    trianglePolyData = vtkPolyData()
+            self.selected_actor.GetProperty().SetLineWidth(3)
 
-    # Add the geometry and topology to the polydata.
-    trianglePolyData.SetPoints(points)
-    trianglePolyData.GetPointData().SetScalars(colors)
-    trianglePolyData.SetPolys(triangles)
+            self.GetInteractor().GetRenderWindow().GetRenderers().GetFirstRenderer().AddActor(self.selected_actor)
 
-    # Clean the polydata so that the edges are shared!
-    cleanPolyData = vtkCleanPolyData()
-    cleanPolyData.SetInputData(trianglePolyData)
+        # Forward events
+        self.OnLeftButtonDown()
 
-    # Use a filter to smooth the data (will add triangles and smooth).
-    smooth_loop = vtkLoopSubdivisionFilter()
-    smooth_loop.SetNumberOfSubdivisions(3)
-    smooth_loop.SetInputConnection(cleanPolyData.GetOutputPort())
 
-    # Create a mapper and actor for smoothed dataset.
+def main(argv):
+    colors = vtkNamedColors()
+
+    plane_source = vtkPlaneSource()
+    plane_source.Update()
+
+    triangle_filter = vtkTriangleFilter()
+    triangle_filter.SetInputConnection(plane_source.GetOutputPort())
+    triangle_filter.Update()
+
     mapper = vtkPolyDataMapper()
-    mapper.SetInputConnection(smooth_loop.GetOutputPort())
-    actor_loop = vtkActor()
-    actor_loop.SetMapper(mapper)
-    actor_loop.GetProperty().SetInterpolationToFlat()
+    mapper.SetInputConnection(triangle_filter.GetOutputPort())
 
-    # Update the pipeline so that vtkCellLocator finds cells!
-    smooth_loop.Update()
-
-    # Define a cellLocator to be able to compute intersections between lines.
-    # and the surface
-    locator = vtkCellLocator()
-    locator.SetDataSet(smooth_loop.GetOutput())
-    locator.BuildLocator()
-
-    maxloop = 1000
-    dist = 20.0 / maxloop
-    tolerance = 0.001
-
-    # Make a list of points. Each point is the intersection of a vertical line
-    # defined by p1 and p2 and the surface.
-    points = vtkPoints()
-    for i in range(maxloop):
-        p1 = [2 + i * dist, 16, -1]
-        p2 = [2 + i * dist, 16, 6]
-
-        # Outputs (we need only pos which is the x, y, z position
-        # of the intersection)
-        t = mutable(0)
-        pos = [0.0, 0.0, 0.0]
-        pcoords = [0.0, 0.0, 0.0]
-        subId = mutable(0)
-        locator.IntersectWithLine(p1, p2, tolerance, t, pos, pcoords, subId)
-
-        # Add a slight offset in z.
-        pos[2] += 0.01
-        # Add the x, y, z position of the intersection.
-        points.InsertNextPoint(pos)
-
-    # Create a spline and add the points
-    spline = vtkParametricSpline()
-    spline.SetPoints(points)
-    functionSource = vtkParametricFunctionSource()
-    functionSource.SetUResolution(maxloop)
-    functionSource.SetParametricFunction(spline)
-
-    # Map the spline
-    mapper = vtkPolyDataMapper()
-    mapper.SetInputConnection(functionSource.GetOutputPort())
-
-    # Define the line actor
     actor = vtkActor()
+    actor.GetProperty().SetColor(colors.GetColor3d('SeaGreen'))
     actor.SetMapper(mapper)
-    actor.GetProperty().SetColor(named_colors.GetColor3d('Red'))
-    actor.GetProperty().SetLineWidth(3)
 
-    # Visualize
     renderer = vtkRenderer()
-    renderWindow = vtkRenderWindow()
-    renderWindow.AddRenderer(renderer)
-    renderWindowInteractor = vtkRenderWindowInteractor()
-    renderWindowInteractor.SetRenderWindow(renderWindow)
+    ren_win = vtkRenderWindow()
+    ren_win.AddRenderer(renderer)
+    ren_win.SetWindowName('CellPicking')
+    iren = vtkRenderWindowInteractor()
+    iren.SetRenderWindow(ren_win)
 
-    # Add actors and render
     renderer.AddActor(actor)
-    renderer.AddActor(actor_loop)
+    # renderer.ResetCamera()
+    renderer.SetBackground(colors.GetColor3d('PaleTurquoise'))
 
-    renderer.SetBackground(named_colors.GetColor3d('Cornsilk'))
-    renderWindow.SetSize(800, 800)
-    renderWindow.Render()
-    renderer.GetActiveCamera().SetPosition(-32.471276, 53.258788, 61.209332)
-    renderer.GetActiveCamera().SetFocalPoint(15.500000, 15.500000, 2.000000)
-    renderer.GetActiveCamera().SetViewUp(0.348057, -0.636740, 0.688055)
-    renderer.ResetCameraClippingRange()
-    renderWindow.SetWindowName('LineOnMesh')
-    renderWindow.Render()
+    # Add the custom style.
+    style = MouseInteractorStyle(triangle_filter.GetOutput())
+    style.SetDefaultRenderer(renderer)
+    iren.SetInteractorStyle(style)
 
-    renderWindowInteractor.Start()
+    ren_win.Render()
+    iren.Initialize()
+    iren.Start()
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+
+    main(sys.argv)
