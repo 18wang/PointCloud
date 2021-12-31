@@ -23,7 +23,10 @@ from vtkmodules.vtkInteractionStyle import (
 from vtkmodules.vtkFiltersGeneral import vtkVertexGlyphFilter
 from vtkmodules.vtkFiltersExtraction import vtkExtractGeometry
 from vtkmodules.vtkCommonColor import vtkNamedColors
-from vtkmodules.vtkIOPLY import vtkPLYReader
+from vtkmodules.vtkIOPLY import (
+    vtkPLYReader,
+    vtkPLYWriter,
+)
 from vtkmodules.vtkCommonDataModel import (
     vtkPolyData,
     vtkCellArray,
@@ -215,7 +218,7 @@ class Ui_MainWindow(QMainWindow):
         """
 
         # 定义 鼠标点云选取类
-        style = Mouse_Pointcloud_Selection(self.ren, self.polydata)
+        style = Mouse_Pointcloud_Selection(self, self.ren, self.polydata)
         style.SetDefaultRenderer(self.ren)
         self.iren.SetInteractorStyle(style)
         # 添加 area_picker
@@ -229,9 +232,11 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
     """
     鼠标点云选取类
     """
-    def __init__(self, render, data):
-        self.data = data
+    def __init__(self, qWidget, render, data):
+        self.qWidget = qWidget
         self.ren = render
+        self.data = data
+
         self.AddObserver(vtk.vtkCommand.PickEvent, self.PickEvent)
         self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.KeypressCallbackFunction)
 
@@ -248,6 +253,15 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
         # clickPos = self.GetInteractor().GetEventPosition()
         # print(clickPos)
         print('区域已选中。')
+
+    def savePolydata(self):
+        """
+        qFileDialog文件读取
+        :return: fileName
+        """
+        fileName = QFileDialog.getSaveFileName(self.qWidget,
+            'Save file', './', '点云文件(*.txt *.ply *.obj *.stl);;彩色点云文件(*.txt)')
+        return fileName
 
     def EndPickEventfunc(self, obj, event):
 
@@ -279,23 +293,20 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
         actor = vtkActor()
         actor.SetMapper(mapper)
         actor.GetProperty().SetColor(colors.GetColor3d('Tomato'))
-        # actor.GetProperty().SetPointSize(5)
-        actors = self.ren.GetActors()
-        print(actors, type(actors))
-        self.ren.RemoveActor(actors)
-        self.ren.AddActor(actor)
+        # actor.GetProperty().SetPointSize(5)               # 设置点云大小
+        lastActor = self.ren.GetActors().GetLastActor()     # 获取最后添加的 Actor
+        self.ren.RemoveActor(lastActor)                     # 移除最后的 Actor
+        self.ren.AddActor(actor)            # 添加新截取的部分
+
+        fileName = self.savePolydata()
+        print(fileName)
+        plyWriter = vtkPLYWriter()
+        plyWriter.SetFileName(fileName[0])
+        plyWriter.SetInputConnection(selected.GetOutputPort())
+        plyWriter.Write()
 
 
 
-
-
-
-"""
-
-        clickPos = self.GetInteractor().GetEventPosition()
-        print(clickPos)
-
-"""
 
 if __name__ == "__main__":
 
