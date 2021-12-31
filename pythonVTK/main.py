@@ -302,7 +302,7 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
         print(fileName)
         plyWriter = vtkPLYWriter()
         plyWriter.SetFileName(fileName[0])
-        plyWriter.SetInputConnection(selected.GetOutputPort())
+        plyWriter.SetInputData(selected)
         plyWriter.Write()
 
 
