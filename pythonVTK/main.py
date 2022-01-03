@@ -40,6 +40,8 @@ from vtkmodules.vtkRenderingCore import (
     vtkActor,
     vtkPolyDataMapper,
 )
+# vtk <==> numpy 格式转换
+from vtk.util import numpy_support
 # 嵌入qt 默认引用
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
@@ -220,8 +222,11 @@ class Ui_MainWindow(QMainWindow):
         self.ptDialog = PTFDialog()
         self.ptDialog.SetPTF.connect(self.runPassThrough)
 
-
         self.ptDialog.show()
+
+        # https://pyscience.wordpress.com/2014/09/06/numpy-to-vtk-converting-your-numpy-arrays-to-vtk-arrays-and-files/
+        # https://discourse.vtk.org/t/convert-vtk-array-to-numpy-array/3152
+
 
     def runPassThrough(self, params):
         pcd, fieldName, limits = params
