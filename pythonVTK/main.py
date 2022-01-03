@@ -3,17 +3,19 @@ import numpy as np
 import MainForm
 import vtk
 from pathlib import Path
+
 from Filtering.CropHull import Mouse_Pointcloud_Selection
-from Filtering.PassThroughFilter import Ui_PTFDialog
-
-
+from Filtering.PassThroughFilterUI import Ui_PTFDialog
+from Filtering.PassThroughFilter import PassThroughFilter
 
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QFrame,
     QFileDialog,
+    QDialog,
 )
+from PyQt5.QtCore import pyqtSignal
 
 # vtkInteractionStyle vtkRenderingOpenGL2 交互与显示，虽不直接使用，但需要import
 from vtkmodules.vtkIOPLY import (
@@ -215,9 +217,52 @@ class Ui_MainWindow(QMainWindow):
 
 
     def passThrough(self):
-        self.ptDialog = Ui_PTFDialog()
+        self.ptDialog = PTFDialog()
+        self.ptDialog.SetPTF.connect(self.runPassThrough)
 
 
+        self.ptDialog.show()
+
+    def runPassThrough(self, params):
+        pcd, fieldName, limits = params
+        print('主窗口', params)
+
+
+
+
+
+
+
+
+class PTFDialog(QDialog):
+    SetPTF = pyqtSignal(list)
+
+    def __init__(self):
+        super(PTFDialog, self).__init__()
+
+        self.ui = Ui_PTFDialog()
+        self.ui.setupUi(self)
+
+        self.ui.setBtn.clicked.connect(self.setPassThrough)
+        self.ui.clearBtn.clicked.connect(self.clearPassThrough)
+        self.ui.cancelBtn.clicked.connect(self.close)
+
+
+    def setPassThrough(self):
+        XYZ = self.ui.XYZcomboBox.currentText()
+        logical = self.ui.logicalcomBox.currentText()
+        value = self.ui.lineEdit.text()
+        print(XYZ, logical, value)
+        self.SetPTF.emit([XYZ, logical, value])
+
+        pass
+
+
+    def clearPassThrough(self):
+
+        pass
+
+        return
 
 
 
