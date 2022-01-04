@@ -1,5 +1,46 @@
+"""
+直通滤波UI和功能函数
+"""
+
 import numpy as np
 import open3d as o3d
+from PassThroughFilterUI import Ui_PTFDialog
+
+from PyQt5.QtWidgets import (
+    QDialog,
+)
+from PyQt5.QtCore import pyqtSignal
+
+class PTFDialog(QDialog):
+    SetPTF = pyqtSignal(list)
+
+    def __init__(self):
+        super(PTFDialog, self).__init__()
+
+        self.ui = Ui_PTFDialog()
+        self.ui.setupUi(self)
+
+        self.ui.setBtn.clicked.connect(self.setPassThrough)
+        self.ui.clearBtn.clicked.connect(self.clearPassThrough)
+        self.ui.cancelBtn.clicked.connect(self.close)
+
+
+    def setPassThrough(self):
+        XYZ = self.ui.XYZcomboBox.currentText()
+        logical = self.ui.logicalcomBox.currentText()
+        value = self.ui.lineEdit.text()
+        print(XYZ, logical, value)
+        self.SetPTF.emit([XYZ, logical, value])
+
+        pass
+
+
+    def clearPassThrough(self):
+
+        pass
+
+        return
+
 
 # 直通滤波 PassThrough Filter
 def PassThroughFilter(pcd, fieldName, limits, limitsNegative=False):

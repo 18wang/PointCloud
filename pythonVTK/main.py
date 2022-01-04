@@ -2,22 +2,34 @@ import sys
 import numpy as np
 import MainForm
 import vtk
-from pathlib import Path
 
+# 自定义程序类库
 from Filtering.CropHull import Mouse_Pointcloud_Selection
 from Filtering.PassThroughFilterUI import Ui_PTFDialog
-from Filtering.PassThroughFilter import PassThroughFilter
+from Registration.GlobalRegistration import GlobalRegistration
+from Filtering.PassThroughFilter import (
+    PassThroughFilter,
+    PTFDialog,
+)
+from IO.VTKFileIO import readPolyData
+from IO.Open3DFileIO import readOpen3D
+from IO.PointCloudtoPolydata import PointCloudtoPolydata
+from IO.MeshOperations import MeshPoissonSample
 
+
+#
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QFrame,
     QFileDialog,
-    QDialog,
 )
-from PyQt5.QtCore import pyqtSignal
+
 
 # vtkInteractionStyle vtkRenderingOpenGL2 交互与显示，虽不直接使用，但需要import
+import vtkmodules.vtkInteractionStyle
+import vtkmodules.vtkRenderingOpenGL2
+
 from vtkmodules.vtkIOPLY import (
     vtkPLYReader,
 )
@@ -54,13 +66,27 @@ class Ui_MainWindow(QMainWindow):
         self.ui = MainForm.Ui_MainWindow()
         self.ui.setupUi(self)
 
-#------------------ 自行添加的信号/槽 ------------------------------------
+        #------------------ 存放重要的系统参数 ---------------------------------
+        self.polydata = []   # vtk 显示数据
+        self.actor = []       # vtk actor
+        self.pointcloud = []  # open3d 数据
+        self.Mark = dict()              # 类型标记
+
+        #-------------------------------------------------------------------
+
+
+        #------------------ 手动添加的信号/槽 ------------------------------------
         self.ui.actionopen.triggered.connect(self.readFile)
+        self.ui.actionopenStl.triggered.connect(self.readSTL)
+
         self.ui.actionCropHull.triggered.connect(self.cropHull)
         self.ui.actionzhitong.triggered.connect(self.passThrough)
 
+        self.ui.actionGlobalRegist.triggered.connect(self.globalRegist)
 
-#---------------------------------------------------------------------
+        self.ui.actionClearDisplay.triggered.connect(self.clearDisplay)
+
+        #---------------------------------------------------------------------
 
         self.frame = QFrame()
 
@@ -75,80 +101,34 @@ class Ui_MainWindow(QMainWindow):
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
 
 
-    def getFile(self):
+    def readFile(self):
         """
-        qFileDialog文件读取
-        :return: fileName
+        txt文件读取
+        :return: bool
         """
+        # The source file
         fileName, _ = QFileDialog.getOpenFileName(self,
-            'Open file', './', '点云文件(*.txt *.ply *.obj *.stl);;彩色点云文件(*.txt)')
-        return fileName
+                        'Open file', './', '点云文件(*.txt);;RGB点云文件(*.txt)')
+        self.polydata.append(readPolyData(fileName))
+        self.pointcloud.append(readOpen3D(fileName))
+        self.Mark['.txt'] = len(self.pointcloud) - 1
+        self.displayPolydata(self.polydata[-1])
+        return True
 
-    def ReadPolyData(self, file_name):
+    def readSTL(self):
         """
-        文件名分析并读取
-        :param file_name:
-        :return: polydata
+        stl文件读取
+        :return: bool
         """
-        valid_suffixes = ['.obj', '.stl', '.ply', '.txt']
-        path = Path(file_name)
-        if path.suffix:
-            ext = path.suffix.lower()
-        if path.suffix not in valid_suffixes:
-            print(f'No reader for this file suffix: {ext}')
-            return None
-        else:
-            if ext == ".ply":
-                reader = vtkPLYReader()
-                reader.SetFileName(file_name)
-                reader.Update()
-                poly_data = reader.GetOutput()
-            elif ext == ".obj":
-                reader = vtkOBJReader()
-                reader.SetFileName(file_name)
-                reader.Update()
-                poly_data = reader.GetOutput()
-            elif ext == ".stl":
-                reader = vtkSTLReader()
-                reader.SetFileName(file_name)
-                reader.Update()
-                poly_data = reader.GetOutput()
-            elif ext == ".txt":
+        # The source file
+        fileName, _ = QFileDialog.getOpenFileName(self,
+                        'Open file', './', 'STL文件(*.stl)')
+        self.polydata.append(readPolyData(fileName))
+        self.pointcloud.append(readOpen3D(fileName))
+        self.Mark['.stl'] = len(self.pointcloud) - 1
+        self.displayPolydata(self.polydata[-1])
+        return True
 
-                temp_data = np.loadtxt(file_name)
-
-                isColorfulPoints = temp_data.shape[1] > 3
-                if isColorfulPoints:
-                    # 彩色点云数据
-                    source_color = temp_data[:, 3:]
-                    # 0-255 RGB彩色
-                    source_color_int = [[int(i[0]*255), int(i[1]*255),
-                                         int(i[2]*255)] for i in source_color]
-                    colors = vtkUnsignedCharArray()
-                    colors.SetNumberOfComponents(3)
-
-                # 点云数据点
-                source_data = temp_data[:, 0:3]
-
-                # points cell color 类型
-                points = vtkPoints()
-                poly_data = vtkPolyData()
-                vtkCells = vtkCellArray()
-
-                # 插入cell
-                for i, p in enumerate(source_data):
-                    pointId = points.InsertNextPoint(p[:])  # 插入点
-                    vtkCells.InsertNextCell(1)
-                    vtkCells.InsertCellPoint(pointId)
-                    if isColorfulPoints:
-                        colors.InsertNextTypedTuple(source_color_int[i])
-
-                poly_data.SetPoints(points)
-                poly_data.SetVerts(vtkCells)
-                if isColorfulPoints:
-                    poly_data.GetPointData().SetScalars(colors)
-
-            return poly_data
 
 
     def displayPolydata(self, polydata):
@@ -163,6 +143,7 @@ class Ui_MainWindow(QMainWindow):
 
         actor = vtkActor()
         actor.SetMapper(mapper)
+        self.actor.append(actor)
         self.ren.AddActor(actor)
 
         if False:
@@ -190,17 +171,37 @@ class Ui_MainWindow(QMainWindow):
         return True
 
 
-    def readFile(self):
+    def globalRegist(self):
         """
-        文件读取
-        :return: bool
+        点云和stl全局配准函数
+        :return:
         """
-        # The source file
-        file_name = self.getFile()
-        self.polydata = self.ReadPolyData(file_name)
-        self.displayPolydata(self.polydata)
-        return True
+        stlIndex = self.Mark[".stl"]
+        txtIndex = self.Mark[".txt"]
+        print(self.pointcloud[txtIndex])
+        # voxel_size 可以设置为用户可调，另有其他几个超参数，可设置接口
+        pointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum)
+        result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
+            voxel_size=1)
+        transMatrix = np.array(result.transformation)
+        self.pointcloud[txtIndex].transform(transMatrix)
 
+        # 类型变换 PointCloud => polydata
+        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
+
+        mapper = vtkPolyDataMapper()
+        mapper.SetInputData(self.polydata[txtIndex])
+
+        actor = vtkActor()
+        actor.SetMapper(mapper)
+        # 删除旧显示
+        self.actor = np.delete(self.actor, txtIndex).tolist()
+        self.ren.RemoveActor(self.actor[txtIndex])
+        # 添加新显示
+        self.actor.append(actor)
+        self.ren.AddActor(actor)
+        self.ren.ResetCamera()
 
     def cropHull(self):
         """
@@ -219,6 +220,10 @@ class Ui_MainWindow(QMainWindow):
 
 
     def passThrough(self):
+        """
+        直通滤波功能
+        :return:
+        """
         self.ptDialog = PTFDialog()
         self.ptDialog.SetPTF.connect(self.runPassThrough)
 
@@ -233,41 +238,25 @@ class Ui_MainWindow(QMainWindow):
         print('主窗口', params)
 
 
+    def clearDisplay(self):
+        """
+        清除VTK显示窗口
+        :return:
+        """
+        # 清空显示
+        for act in self.actor:
+            self.ren.RemoveActor(act)
 
-
-
-
-
-
-class PTFDialog(QDialog):
-    SetPTF = pyqtSignal(list)
-
-    def __init__(self):
-        super(PTFDialog, self).__init__()
-
-        self.ui = Ui_PTFDialog()
-        self.ui.setupUi(self)
-
-        self.ui.setBtn.clicked.connect(self.setPassThrough)
-        self.ui.clearBtn.clicked.connect(self.clearPassThrough)
-        self.ui.cancelBtn.clicked.connect(self.close)
-
-
-    def setPassThrough(self):
-        XYZ = self.ui.XYZcomboBox.currentText()
-        logical = self.ui.logicalcomBox.currentText()
-        value = self.ui.lineEdit.text()
-        print(XYZ, logical, value)
-        self.SetPTF.emit([XYZ, logical, value])
-
-        pass
-
-
-    def clearPassThrough(self):
-
-        pass
+        # 清空元素
+        self.actor = []
+        self.polydata = []
+        self.pointcloud = []
+        self.Mark = dict()
 
         return
+
+
+
 
 
 

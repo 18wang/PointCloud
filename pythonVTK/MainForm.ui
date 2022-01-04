@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>1192</width>
-     <height>23</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -54,13 +54,20 @@
     <property name="title">
      <string>对齐</string>
     </property>
-    <addaction name="actioncuiduiqi"/>
+    <addaction name="actionGlobalRegist"/>
     <addaction name="actionICP"/>
     <addaction name="actionRPS"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>显示</string>
+    </property>
+    <addaction name="actionClearDisplay"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -90,9 +97,9 @@
     <string>读取点云</string>
    </property>
   </action>
-  <action name="actioncuiduiqi">
+  <action name="actionGlobalRegist">
    <property name="text">
-    <string>cuiduiqi</string>
+    <string>粗配准</string>
    </property>
   </action>
   <action name="actionICP">
@@ -102,22 +109,27 @@
   </action>
   <action name="actionRPS">
    <property name="text">
-    <string>RPS</string>
+    <string>手动选点</string>
    </property>
   </action>
   <action name="actionzhitong">
    <property name="text">
-    <string>zhitong</string>
+    <string>直通滤波</string>
    </property>
   </action>
   <action name="actionCropHull">
    <property name="text">
-    <string>CropHull</string>
+    <string>手动圈选</string>
    </property>
   </action>
   <action name="actionopenStl">
    <property name="text">
     <string>读取STL</string>
+   </property>
+  </action>
+  <action name="actionClearDisplay">
+   <property name="text">
+    <string>清空</string>
    </property>
   </action>
  </widget>

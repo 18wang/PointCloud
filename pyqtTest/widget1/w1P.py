@@ -11,14 +11,8 @@ from PyQt5.QtWidgets import (
 
 class Ui_widget1(QWidget):
     def __init__(self, parent=None):
-        super().__init__()
+        super(Ui_widget1, self).__init__(parent)
 
         self.ui = w1.Ui_widget1()
         self.ui.setupUi(self)
 
-
-
-app = QApplication(sys.argv)
-window = Ui_widget1()
-window.show()
-sys.exit(app.exec_())
