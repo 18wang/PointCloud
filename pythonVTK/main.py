@@ -1,3 +1,4 @@
+import copy
 import sys
 import numpy as np
 import MainForm
@@ -185,23 +186,32 @@ class Ui_MainWindow(QMainWindow):
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
             voxel_size=1)
         transMatrix = np.array(result.transformation)
-        self.pointcloud[txtIndex].transform(transMatrix)
+        GRsource = copy.deepcopy(self.pointcloud[txtIndex])
+        GRsource.transform(transMatrix)
+
+        # print(np.asarray(self.pointcloud[txtIndex].points), '\n\n', np.asarray(GRsource.points))
 
         # 类型变换 PointCloud => polydata
-        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
+        temp = PointCloudtoPolydata(GRsource)
+        self.polydata[txtIndex] = temp
+        print(numpy_support.vtk_to_numpy(temp.GetPoints().GetData()))
+        # self.polydata[txtIndex] = PointCloudtoPolydata(GRsource)
+
 
         mapper = vtkPolyDataMapper()
         mapper.SetInputData(self.polydata[txtIndex])
 
         actor = vtkActor()
         actor.SetMapper(mapper)
-        # 删除旧显示
-        self.actor = np.delete(self.actor, txtIndex).tolist()
+        # 替换旧显示
         self.ren.RemoveActor(self.actor[txtIndex])
+        self.actor[txtIndex] = actor
+
         # 添加新显示
-        self.actor.append(actor)
         self.ren.AddActor(actor)
         self.ren.ResetCamera()
+        self.show()
+        self.iren.Initialize()
 
     def cropHull(self):
         """
