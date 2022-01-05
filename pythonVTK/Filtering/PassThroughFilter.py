@@ -13,7 +13,6 @@ from PyQt5.QtCore import pyqtSignal
 
 class PTFDialog(QDialog):
     SetPTF = pyqtSignal(list)
-
     def __init__(self):
         super(PTFDialog, self).__init__()
 
@@ -32,7 +31,7 @@ class PTFDialog(QDialog):
         print(XYZ, logical, value)
         self.SetPTF.emit([XYZ, logical, value])
 
-        pass
+        return
 
 
     def clearPassThrough(self):

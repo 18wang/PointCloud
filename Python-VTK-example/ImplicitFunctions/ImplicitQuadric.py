@@ -5,7 +5,7 @@ import vtkmodules.vtkInteractionStyle
 # noinspection PyUnresolvedReferences
 import vtkmodules.vtkRenderingOpenGL2
 from vtkmodules.vtkCommonColor import vtkNamedColors
-from vtkmodules.vtkCommonDataModel import vtkQuadric
+from vtkmodules.vtkCommonDataModel import vtkQuadric, vtkColor3d
 from vtkmodules.vtkFiltersCore import vtkContourFilter
 from vtkmodules.vtkImagingHybrid import vtkSampleFunction
 from vtkmodules.vtkRenderingCore import (

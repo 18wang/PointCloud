@@ -62,6 +62,7 @@
     <property name="title">
      <string>显示</string>
     </property>
+    <addaction name="actionColorBar"/>
     <addaction name="actionClearDisplay"/>
    </widget>
    <addaction name="menu"/>
@@ -130,6 +131,11 @@
   <action name="actionClearDisplay">
    <property name="text">
     <string>清空</string>
+   </property>
+  </action>
+  <action name="actionColorBar">
+   <property name="text">
+    <string>配准结果显示</string>
    </property>
   </action>
  </widget>

@@ -6,7 +6,32 @@
 import open3d as o3d
 import numpy as np
 
-def GlobalRegistration(source, target, voxel_size=1):
+
+from GlobalRegistrationUI import Ui_GlobalRegistration
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import (
+    QDialog,
+)
+
+class GlobalRegistraionDialog(QDialog):
+    setGR = pyqtSignal(list)
+    def __init__(self):
+        super(GlobalRegistraionDialog, self).__init__()
+        self.ui = Ui_GlobalRegistration()
+        self.ui.setupUi(self)
+
+        self.ui.ok.clicked.connect(self.returnParams)
+        self.ui.cancel.clicked.connect(self.close)
+
+    def returnParams(self):
+        voxelSize = self.ui.voxelSize.text()
+        distanceThreshold = self.ui.distanceThreshold.text()
+        self.close()
+        self.setGR.emit([voxelSize, distanceThreshold])
+
+
+
+def GlobalRegistration(source, target, voxel_size=1, distance_threshold=2):
     """
     ransac 全局配准
     :param source:
@@ -20,8 +45,8 @@ def GlobalRegistration(source, target, voxel_size=1):
                                                                          voxel_size)
 
     # 粗配准, 及结果显示
-    result_ransac = execute_global_registration(source_down, target_down, source_fpfh,
-                                                target_fpfh, voxel_size)
+    result_ransac = execute_global_registration(source_down, target_down,
+                            source_fpfh, target_fpfh, voxel_size, distance_threshold)
     trans_init = np.array(result_ransac.transformation)
     print("全局配准结果:", result_ransac)
     print("全局配准矩阵:", trans_init)
@@ -65,7 +90,7 @@ def prepare_dataset(source, target, voxel_size=1):
 
 
 def execute_global_registration(source_down, target_down, source_fpfh,
-                                target_fpfh, voxel_size):
+                                target_fpfh, voxel_size, distance_threshold):
     """
     全局匹配函数
     :param source_down:
@@ -75,7 +100,7 @@ def execute_global_registration(source_down, target_down, source_fpfh,
     :param voxel_size:
     :return:
     """
-    distance_threshold = voxel_size * 1.5
+
     print(":: RANSAC registration on downsampled point clouds.")
     print("   Since the downsampling voxel size is %.3f," % voxel_size)
     print("   we use a liberal distance threshold %.3f." % distance_threshold)

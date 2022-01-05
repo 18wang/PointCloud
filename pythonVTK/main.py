@@ -1,13 +1,21 @@
-import copy
+
+
 import sys
 import numpy as np
+from vtkmodules.vtkCommonColor import vtkNamedColors
+
 import MainForm
 import vtk
+import time
 
 # 自定义程序类库
 from Filtering.CropHull import Mouse_Pointcloud_Selection
 from Filtering.PassThroughFilterUI import Ui_PTFDialog
-from Registration.GlobalRegistration import GlobalRegistration
+from Registration.GlobalRegistration import (
+    GlobalRegistration,
+    GlobalRegistraionDialog,
+)
+from Registration.ICP import ICPP2P, ICPP2l
 from Filtering.PassThroughFilter import (
     PassThroughFilter,
     PTFDialog,
@@ -16,6 +24,7 @@ from IO.VTKFileIO import readPolyData
 from IO.Open3DFileIO import readOpen3D
 from IO.PointCloudtoPolydata import PointCloudtoPolydata
 from IO.MeshOperations import MeshPoissonSample
+from Display.RendererDisplay import UpdateActor
 
 
 #
@@ -71,7 +80,8 @@ class Ui_MainWindow(QMainWindow):
         self.polydata = []   # vtk 显示数据
         self.actor = []       # vtk actor
         self.pointcloud = []  # open3d 数据
-        self.Mark = dict()              # 类型标记
+        self.Mark = dict()                  # 类型标记
+        self.transMatrix = np.identity(4)   # 配准矩阵
 
         #-------------------------------------------------------------------
 
@@ -84,7 +94,9 @@ class Ui_MainWindow(QMainWindow):
         self.ui.actionzhitong.triggered.connect(self.passThrough)
 
         self.ui.actionGlobalRegist.triggered.connect(self.globalRegist)
+        self.ui.actionICP.triggered.connect(self.ICP)
 
+        self.ui.actionColorBar.triggered.connect(self.colorBarDisplay)
         self.ui.actionClearDisplay.triggered.connect(self.clearDisplay)
 
         #---------------------------------------------------------------------
@@ -97,9 +109,15 @@ class Ui_MainWindow(QMainWindow):
         self.vl.addWidget(self.vtkWidget)
 
         # 新建 vtkRenderer
+        colors = vtkNamedColors()
         self.ren = vtk.vtkRenderer()
         self.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
+        self.ren.SetBackground(colors.GetColor3d('sky_blue_deep'))      # 底色 航天蓝
+
+        self.ren.ResetCamera()
+        self.show()
+        self.iren.Initialize()
 
 
     def readFile(self):
@@ -166,7 +184,6 @@ class Ui_MainWindow(QMainWindow):
             self.scalar_bar_widget.On()
 
         self.ren.ResetCamera()
-        self.show()
         self.iren.Initialize()
 
         return True
@@ -177,41 +194,68 @@ class Ui_MainWindow(QMainWindow):
         点云和stl全局配准函数
         :return:
         """
+
+        self.GRDialog = GlobalRegistraionDialog()
+        self.GRDialog.setGR.connect(self.runGlobalRegist)
+
+        self.GRDialog.show()
+
+
+    def runGlobalRegist(self, params):
+        # voxel_size 可以设置为用户可调，另有其他几个超参数，可设置接口
+        voxel_size, distance_threshold = [float(i) for i in params]
+
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        print(self.pointcloud[txtIndex])
-        # voxel_size 可以设置为用户可调，另有其他几个超参数，可设置接口
         pointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
         stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum)
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
-            voxel_size=1)
-        transMatrix = np.array(result.transformation)
-        GRsource = copy.deepcopy(self.pointcloud[txtIndex])
-        GRsource.transform(transMatrix)
-
-        # print(np.asarray(self.pointcloud[txtIndex].points), '\n\n', np.asarray(GRsource.points))
+            voxel_size=voxel_size)
+        self.transMatrix = np.array(result.transformation)
+        self.pointcloud[txtIndex].transform(self.transMatrix)
 
         # 类型变换 PointCloud => polydata
-        temp = PointCloudtoPolydata(GRsource)
-        self.polydata[txtIndex] = temp
-        print(numpy_support.vtk_to_numpy(temp.GetPoints().GetData()))
-        # self.polydata[txtIndex] = PointCloudtoPolydata(GRsource)
+        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
 
-
-        mapper = vtkPolyDataMapper()
-        mapper.SetInputData(self.polydata[txtIndex])
-
-        actor = vtkActor()
-        actor.SetMapper(mapper)
-        # 替换旧显示
-        self.ren.RemoveActor(self.actor[txtIndex])
-        self.actor[txtIndex] = actor
-
-        # 添加新显示
-        self.ren.AddActor(actor)
+        # 更新Actor, 并显示
+        self.actor[txtIndex] = UpdateActor(self.ren, txtIndex, self.actor,
+                                           self.polydata[txtIndex])
         self.ren.ResetCamera()
-        self.show()
         self.iren.Initialize()
+
+
+    def ICP(self):
+        """
+        ICP 配准函数
+        :return:
+        -> 还可以进一步细分点到点 点到面ICP 加入阈值设定
+        """
+        stlIndex = self.Mark[".stl"]
+        txtIndex = self.Mark[".txt"]
+        pointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum)
+        # ICP之前，必须全局配准
+        ICPp = ICPP2P(self.pointcloud[txtIndex], stlSample, np.identity(4),
+                     threshold=0.5)
+        # 更新变换矩阵
+        self.transMatrix = ICPp.transformation
+        self.pointcloud[txtIndex].transform(self.transMatrix)
+
+        # 类型变换 PointCloud => polydata
+        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
+
+        # 更新Actor, 并显示
+        self.actor[txtIndex] = UpdateActor(self.ren, txtIndex, self.actor,
+                                           self.polydata[txtIndex])
+
+        # ICPl = ICPP2l(self.pointcloud[txtIndex], stlSample, self.transMatrix,
+        #              threshold=0.5)
+        # self.pointcloud[txtIndex].transform(ICPl.transformation)
+
+        return
+
+
+
 
     def cropHull(self):
         """
@@ -220,7 +264,7 @@ class Ui_MainWindow(QMainWindow):
         """
 
         # 定义 鼠标点云选取类
-        style = Mouse_Pointcloud_Selection(self, self.ren, self.polydata)
+        style = Mouse_Pointcloud_Selection(self, self.ren, self.polydata[-1])
         style.SetDefaultRenderer(self.ren)
         self.iren.SetInteractorStyle(style)
         # 添加 area_picker
@@ -248,6 +292,16 @@ class Ui_MainWindow(QMainWindow):
         print('主窗口', params)
 
 
+    def colorBarDisplay(self):
+        """
+        配准色彩映射显示
+        :return:
+        """
+
+        return
+
+
+
     def clearDisplay(self):
         """
         清除VTK显示窗口
@@ -263,13 +317,7 @@ class Ui_MainWindow(QMainWindow):
         self.pointcloud = []
         self.Mark = dict()
 
-        return
-
-
-
-
-
-
+        return True
 
 
 

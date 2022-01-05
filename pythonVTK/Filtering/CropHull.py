@@ -108,7 +108,7 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
 
         actor = vtkActor()
         actor.SetMapper(mapper)
-        actor.GetProperty().SetColor(colors.GetColor3d('Tomato'))
+        actor.GetProperty().SetColor(colors.GetColor3d('light_salmon'))
         # actor.GetProperty().SetPointSize(5)               # 设置点云大小
         lastActor = self.ren.GetActors().GetLastActor()     # 获取最后添加的 Actor
         self.ren.RemoveActor(lastActor)                     # 移除最后的 Actor

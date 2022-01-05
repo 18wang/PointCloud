@@ -27,8 +27,6 @@ def PointCloudtoPolydata(source):
     colors = vtkUnsignedCharArray()
     colors.SetNumberOfComponents(3)
 
-
-
     # 插入cell
     for i, p in enumerate(pointsData):
         pointId = points.InsertNextPoint(p[:])  # 插入点
