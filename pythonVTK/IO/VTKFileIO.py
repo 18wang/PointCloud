@@ -6,6 +6,7 @@ VTK文件读取功能模块
 
 from pathlib import Path
 import numpy as np
+import pandas as pd
 
 from vtkmodules.vtkIOGeometry import (
     vtkOBJReader,
@@ -54,7 +55,10 @@ def readPolyData(file_name):
             poly_data = reader.GetOutput()
         elif ext == ".txt":
 
-            temp_data = np.loadtxt(file_name)
+            read_csv_data = pd.read_csv(file_name, header=None, na_filter=False,
+                                        delim_whitespace=True)
+            temp_data = read_csv_data.to_numpy()
+            # temp_data = np.loadtxt(file_name)
 
             isColorfulPoints = temp_data.shape[1] > 3
             if isColorfulPoints:

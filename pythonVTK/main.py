@@ -129,9 +129,10 @@ class Ui_MainWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,
                         'Open file', './', '点云文件(*.txt);;RGB点云文件(*.txt)')
         self.polydata.append(readPolyData(fileName))
+        self.displayPolydata(self.polydata[-1])
         self.pointcloud.append(readOpen3D(fileName))
         self.Mark['.txt'] = len(self.pointcloud) - 1
-        self.displayPolydata(self.polydata[-1])
+
         return True
 
     def readSTL(self):
@@ -207,11 +208,13 @@ class Ui_MainWindow(QMainWindow):
 
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        pointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
+        MaxPointsNum = 5e6
+        txtPointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
+        pointsNum = int(min(MaxPointsNum, txtPointsNum))
         stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum)
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
             voxel_size=voxel_size)
-        self.transMatrix = np.array(result.transformation)
+        self.transMatrix = np.asarray(result.transformation)
         self.pointcloud[txtIndex].transform(self.transMatrix)
 
         # 类型变换 PointCloud => polydata

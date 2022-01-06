@@ -6,6 +6,7 @@ Open3D文件读写
 import open3d as o3d
 import numpy as np
 from pathlib import Path
+import pandas as pd
 
 def readOpen3D(filename):
     """
@@ -29,7 +30,10 @@ def readOpen3D(filename):
             source = o3d.io.read_point_cloud(filename)
 
         elif ext == ".txt":
-            temp_data = np.loadtxt(filename)
+
+            read_csv_data = pd.read_csv(filename, header=None, na_filter=False,
+                                        delim_whitespace=True)
+            temp_data = read_csv_data.to_numpy()
 
             # 点云数据点
             source = o3d.geometry.PointCloud()
