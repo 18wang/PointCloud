@@ -80,6 +80,7 @@ class Ui_MainWindow(QMainWindow):
         self.polydata = []   # vtk 显示数据
         self.actor = []       # vtk actor
         self.pointcloud = []  # open3d 数据
+        self.sourcedata = []
         self.Mark = dict()                  # 类型标记
         self.transMatrix = np.identity(4)   # 配准矩阵
 
@@ -131,6 +132,7 @@ class Ui_MainWindow(QMainWindow):
         self.polydata.append(readPolyData(fileName))
         self.displayPolydata(self.polydata[-1])
         self.pointcloud.append(readOpen3D(fileName))
+        self.sourcedata.append(readOpen3D(fileName))
         self.Mark['.txt'] = len(self.pointcloud) - 1
 
         return True
@@ -145,6 +147,7 @@ class Ui_MainWindow(QMainWindow):
                         'Open file', './', 'STL文件(*.stl)')
         self.polydata.append(readPolyData(fileName))
         self.pointcloud.append(readOpen3D(fileName))
+        self.sourcedata.append(readOpen3D(fileName))
         self.Mark['.stl'] = len(self.pointcloud) - 1
         self.displayPolydata(self.polydata[-1])
         return True
@@ -206,25 +209,49 @@ class Ui_MainWindow(QMainWindow):
         # voxel_size 可以设置为用户可调，另有其他几个超参数，可设置接口
         voxel_size, distance_threshold = [float(i) for i in params]
 
+        t1 = time.time()
+        print("开始globalRegist", t1)
+
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        MaxPointsNum = 5e6
+        MaxPointsNum = 5e4
         txtPointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
         pointsNum = int(min(MaxPointsNum, txtPointsNum))
-        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum)
+        kPoints = txtPointsNum // pointsNum
+        self.pointcloud[txtIndex] = self.pointcloud[txtIndex].uniform_down_sample(kPoints)
+
+        t2 = time.time()
+        print("原始点云下采样耗时", t2 - t1)
+
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=1)
+
+        t3 = time.time()
+        print("stl采样耗时", t3 - t2)
+
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
             voxel_size=voxel_size)
+
+        t4 = time.time()
+        print("粗配准运算耗时", t4 - t3)
+
         self.transMatrix = np.asarray(result.transformation)
         self.pointcloud[txtIndex].transform(self.transMatrix)
+        self.sourcedata[txtIndex].transform(self.transMatrix)
+
+        t5 = time.time()
+        print("矩阵变换耗时", t5- t4)
 
         # 类型变换 PointCloud => polydata
-        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
+        self.polydata[txtIndex] = PointCloudtoPolydata(self.sourcedata[txtIndex])
 
         # 更新Actor, 并显示
         self.actor[txtIndex] = UpdateActor(self.ren, txtIndex, self.actor,
                                            self.polydata[txtIndex])
         self.ren.ResetCamera()
         self.iren.Initialize()
+
+        t6 = time.time()
+        print("更新显示耗时", t6 - t5)
 
 
     def ICP(self):
@@ -317,6 +344,7 @@ class Ui_MainWindow(QMainWindow):
         # 清空元素
         self.actor = []
         self.polydata = []
+        self.sourcedata = []
         self.pointcloud = []
         self.Mark = dict()
 

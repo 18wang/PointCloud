@@ -45,7 +45,7 @@ def GlobalRegistration(source, target, voxel_size=1, distance_threshold=2):
                                                                          voxel_size)
 
     # 粗配准, 及结果显示
-    result_ransac = execute_global_registration(source_down, target_down,
+    result_ransac = execute_fast_global_registration(source_down, target_down,
                             source_fpfh, target_fpfh, voxel_size, distance_threshold)
     trans_init = np.array(result_ransac.transformation)
     print("全局配准结果:", result_ransac)
@@ -116,5 +116,17 @@ def execute_global_registration(source_down, target_down, source_fpfh,
         ], o3d.pipelines.registration.RANSACConvergenceCriteria(100000, 0.999))
     return result
 
+
+def execute_fast_global_registration(source_down, target_down, source_fpfh,
+                                     target_fpfh, voxel_size, distance_threshold):
+    if not distance_threshold:
+        distance_threshold = voxel_size * 0.5
+    print(":: Apply fast global registration with distance threshold %.3f" \
+            % distance_threshold)
+    result = o3d.pipelines.registration.registration_fgr_based_on_feature_matching(
+        source_down, target_down, source_fpfh, target_fpfh,
+        o3d.pipelines.registration.FastGlobalRegistrationOption(
+            maximum_correspondence_distance=distance_threshold))
+    return result
 
 
