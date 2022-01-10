@@ -214,22 +214,24 @@ class Ui_MainWindow(QMainWindow):
 
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        MaxPointsNum = 5e4
+        MaxPointsNum = 5e50
         txtPointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
-        pointsNum = int(min(MaxPointsNum, txtPointsNum))
-        kPoints = txtPointsNum // pointsNum
+        kPoints = 64
+        pointsNum = int(min(MaxPointsNum, txtPointsNum)) // kPoints
+        # kPoints = txtPointsNum // pointsNum
+        kPoints = 64
         self.pointcloud[txtIndex] = self.pointcloud[txtIndex].uniform_down_sample(kPoints)
 
         t2 = time.time()
         print("原始点云下采样耗时", t2 - t1)
 
-        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=1)
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=2)
 
         t3 = time.time()
         print("stl采样耗时", t3 - t2)
 
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
-            voxel_size=voxel_size)
+            voxel_size=voxel_size, distance_threshold=distance_threshold)
 
         t4 = time.time()
         print("粗配准运算耗时", t4 - t3)
