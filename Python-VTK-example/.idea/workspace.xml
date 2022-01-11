@@ -2,33 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dca93d72-8748-4dbc-9985-2cf4c017eab6" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/AAtest/test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Display/RendererDisplay.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/ICP.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../python_pointcloud/data/粗配准pz.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Python-VTK-example.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Python-VTK-example.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/RPSFunction.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pythonVTK/testFile/大型零件选点配准.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ImplicitFunctions/ImplicitQuadric.py" beforeDir="false" afterPath="$PROJECT_DIR$/ImplicitFunctions/ImplicitQuadric.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/.idea/pythonVTK.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/.idea/pythonVTK.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AAtest/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/AAtest/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/Filtering/CropHull.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Filtering/CropHull.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/Filtering/PassThroughFilter.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Filtering/PassThroughFilter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/IO/PointCloudtoPolydata.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/IO/PointCloudtoPolydata.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/MainForm.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/MainForm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/MainForm.ui" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/MainForm.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/ProjectSrc/crop1.ply" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/ProjectSrc/crop1.ply" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistration.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.ui" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../python_pointcloud/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../python_pointcloud/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../python_pointcloud/.idea/python_pointcloud.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../python_pointcloud/.idea/python_pointcloud.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../python_pointcloud/data/彩色pz.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../python_pointcloud/data/彩色pz.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/test3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../python_pointcloud/open3d/stl_txt_ICP.py" beforeDir="false" afterPath="$PROJECT_DIR$/../python_pointcloud/open3d/stl_txt_ICP.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../工作_学习记录/学习记录.md" beforeDir="false" afterPath="$PROJECT_DIR$/../工作_学习记录/学习记录.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../工作_学习记录/工作记录.md" beforeDir="false" afterPath="$PROJECT_DIR$/../工作_学习记录/工作记录.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,21 +70,56 @@
       <recent name="$PROJECT_DIR$/IO" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
-    <configuration name="Curvatures" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.HighlightWithSilhouette">
+    <configuration name="CellPicking" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PolyData" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Picking" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PolyData/Curvatures.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Picking/CellPicking.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="HighlightPickedActor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Python-VTK-example" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Picking" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Picking/HighlightPickedActor.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="HighlightWithSilhouette" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Python-VTK-example" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Picking" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Picking/HighlightWithSilhouette.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -110,9 +132,6 @@
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ImplicitFunctions" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -128,57 +147,10 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="ReadPLY" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Python-VTK-example" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/IO" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/IO/ReadPLY.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="ReadSTL" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Python-VTK-example" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/IO" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/IO/ReadSTL.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AAtest" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -196,11 +168,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.HighlightWithSilhouette" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.HighlightPickedActor" />
+        <item itemvalue="Python.CellPicking" />
         <item itemvalue="Python.ImplicitQuadric" />
-        <item itemvalue="Python.ReadPLY" />
-        <item itemvalue="Python.ReadSTL" />
-        <item itemvalue="Python.Curvatures" />
       </list>
     </recent_temporary>
   </component>
@@ -220,6 +192,7 @@
       <workItem from="1641343437417" duration="1333000" />
       <workItem from="1641355726273" duration="1942000" />
       <workItem from="1641370381349" duration="1898000" />
+      <workItem from="1641883235294" duration="8989000" />
     </task>
     <servers />
   </component>

@@ -143,12 +143,13 @@ def ICPP2l(source, target, threshold, trans_init, maxIteration=30):
 if __name__ == "__main__":
 
     # 读取txt扫描数据文件 返回 pcd
-    sourcePath = "../../../data/曲面6-2.txt"
+    sourcePath = "../data/pz.txt"
     source = txt2PointCloud(sourcePath)
 
 
     # 读取 mesh
-    targetPath = "../../../data/壳体.stl"
+    # targetPath = "../../../data/壳体.stl"
+    targetPath = "../data/pz.STL"
     mesh = o3d.io.read_triangle_mesh(targetPath)
 
     # mesh 采样生成 pcd

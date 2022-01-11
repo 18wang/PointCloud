@@ -45,7 +45,7 @@ from vtkmodules.vtkIOPLY import (
 )
 from vtkmodules.vtkCommonDataModel import (
     vtkPolyData,
-    vtkCellArray,
+    vtkCellArray, vtkPointLocator,
 )
 from vtkmodules.vtkCommonCore import (
     vtkLookupTable,
@@ -60,7 +60,7 @@ from vtkmodules.vtkInteractionWidgets import vtkScalarBarWidget
 from vtkmodules.vtkRenderingAnnotation import vtkScalarBarActor
 from vtkmodules.vtkRenderingCore import (
     vtkActor,
-    vtkPolyDataMapper,
+    vtkPolyDataMapper, vtkRenderer, vtkPropPicker,
 )
 # vtk <==> numpy 格式转换
 from vtk.util import numpy_support
@@ -96,6 +96,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.ui.actionGlobalRegist.triggered.connect(self.globalRegist)
         self.ui.actionICP.triggered.connect(self.ICP)
+        self.ui.actionRPS.triggered.connect(self.RPS)
 
         self.ui.actionColorBar.triggered.connect(self.colorBarDisplay)
         self.ui.actionClearDisplay.triggered.connect(self.clearDisplay)
@@ -111,7 +112,7 @@ class Ui_MainWindow(QMainWindow):
 
         # 新建 vtkRenderer
         colors = vtkNamedColors()
-        self.ren = vtk.vtkRenderer()
+        self.ren = vtkRenderer()
         self.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
         self.ren.SetBackground(colors.GetColor3d('sky_blue_deep'))      # 底色 航天蓝
@@ -207,28 +208,33 @@ class Ui_MainWindow(QMainWindow):
 
     def runGlobalRegist(self, params):
         # voxel_size 可以设置为用户可调，另有其他几个超参数，可设置接口
-        voxel_size, distance_threshold = [float(i) for i in params]
+        voxel_size, distance_threshold, downSample = [eval(i) for i in params]
 
         t1 = time.time()
         print("开始globalRegist", t1)
 
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        MaxPointsNum = 5e50
+
         txtPointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
-        kPoints = 64
-        pointsNum = int(min(MaxPointsNum, txtPointsNum)) // kPoints
+
+        downSample = int(1//downSample)
+        pointsNum = txtPointsNum // downSample
         # kPoints = txtPointsNum // pointsNum
-        kPoints = 64
-        self.pointcloud[txtIndex] = self.pointcloud[txtIndex].uniform_down_sample(kPoints)
+
+        self.pointcloud[txtIndex] = self.pointcloud[txtIndex].uniform_down_sample(
+                                                                            downSample)
+
+
 
         t2 = time.time()
         print("原始点云下采样耗时", t2 - t1)
 
-        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=2)
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=1)
 
         t3 = time.time()
         print("stl采样耗时", t3 - t2)
+
 
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
             voxel_size=voxel_size, distance_threshold=distance_threshold)
@@ -285,6 +291,24 @@ class Ui_MainWindow(QMainWindow):
         # self.pointcloud[txtIndex].transform(ICPl.transformation)
 
         return
+
+
+    def RPS(self):
+        """
+        手动选点配准
+        :return:
+        """
+        txtIndex = self.Mark[".txt"]
+        clickPos = self.GetInteractor().GetEventPosition()
+
+        locator = vtkPointLocator()
+        locator.SetDataSet(self.pointcloud[txtIndex])
+        locator.BuildLocator()
+
+        picker = vtkPropPicker()
+        picker.Pick(clickPos[0], clickPos[1], 0, self.GetDefaultRenderer())
+
+        upstreamId = locator.FindClosestPoint()
 
 
 

@@ -62,7 +62,7 @@ def encode_file(path, workers=4):
 # https://docs.python.org/zh-cn/3/library/multiprocessing.html
 
 # '/home/aboo/PycharmProjects/data/曲面6-2.txt'
-results = encode_file('./ProjectSrc/pz.txt', workers=4)
+results = encode_file('../ProjectSrc/pz.txt', workers=4)
 print(results)
 
 

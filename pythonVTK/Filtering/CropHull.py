@@ -21,19 +21,7 @@ from vtkmodules.vtkCommonDataModel import (
     vtkCellArray,
 )
 from vtkmodules.vtkCommonColor import vtkNamedColors
-from vtkmodules.vtkCommonCore import (
-    vtkLookupTable,
-    vtkUnsignedCharArray,
-    vtkPoints,
-    vtkCallbackCommand,
-)
-from vtkmodules.util import (
-    numpy_support
-)
-from vtkmodules.vtkIOGeometry import (
-    vtkOBJReader,
-    vtkSTLReader,
-)
+
 from vtkmodules.vtkInteractionWidgets import vtkScalarBarWidget
 from vtkmodules.vtkRenderingAnnotation import vtkScalarBarActor
 from vtkmodules.vtkRenderingCore import (

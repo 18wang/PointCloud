@@ -26,8 +26,9 @@ class GlobalRegistraionDialog(QDialog):
     def returnParams(self):
         voxelSize = self.ui.voxelSize.text()
         distanceThreshold = self.ui.distanceThreshold.text()
+        downSample = self.ui.comboBox.currentText()
         self.close()
-        self.setGR.emit([voxelSize, distanceThreshold])
+        self.setGR.emit([voxelSize, distanceThreshold, downSample])
 
 
 
@@ -45,7 +46,9 @@ def GlobalRegistration(source, target, voxel_size=1, distance_threshold=2):
                                                                          voxel_size)
 
     # 粗配准, 及结果显示
-    result_ransac = execute_fast_global_registration(source_down, target_down,
+    # result_ransac = execute_fast_global_registration(source_down, target_down,
+    #                         source_fpfh, target_fpfh, voxel_size, distance_threshold)
+    result_ransac = execute_global_registration(source_down, target_down,
                             source_fpfh, target_fpfh, voxel_size, distance_threshold)
     trans_init = np.array(result_ransac.transformation)
     print("全局配准结果:", result_ransac)
@@ -113,7 +116,7 @@ def execute_global_registration(source_down, target_down, source_fpfh,
                 0.9),
             o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
                 distance_threshold)
-        ], o3d.pipelines.registration.RANSACConvergenceCriteria(100000, 0.999))
+        ], o3d.pipelines.registration.RANSACConvergenceCriteria(10000, 0.99))
     return result
 
 
