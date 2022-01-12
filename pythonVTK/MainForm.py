@@ -65,6 +65,8 @@ class Ui_MainWindow(object):
         self.actionClearDisplay.setObjectName("actionClearDisplay")
         self.actionColorBar = QtWidgets.QAction(MainWindow)
         self.actionColorBar.setObjectName("actionColorBar")
+        self.actionRunRPS = QtWidgets.QAction(MainWindow)
+        self.actionRunRPS.setObjectName("actionRunRPS")
         self.menu.addAction(self.actionxin)
         self.menu.addAction(self.actionopen)
         self.menu.addAction(self.actionopenStl)
@@ -73,6 +75,7 @@ class Ui_MainWindow(object):
         self.menu_3.addAction(self.actionGlobalRegist)
         self.menu_3.addAction(self.actionICP)
         self.menu_3.addAction(self.actionRPS)
+        self.menu_3.addAction(self.actionRunRPS)
         self.menu_4.addAction(self.actionColorBar)
         self.menu_4.addAction(self.actionClearDisplay)
         self.menubar.addAction(self.menu.menuAction())
@@ -100,4 +103,5 @@ class Ui_MainWindow(object):
         self.actionopenStl.setText(_translate("MainWindow", "读取STL"))
         self.actionClearDisplay.setText(_translate("MainWindow", "清空"))
         self.actionColorBar.setText(_translate("MainWindow", "配准结果显示"))
+        self.actionRunRPS.setText(_translate("MainWindow", "点配准"))
 

@@ -57,6 +57,7 @@
     <addaction name="actionGlobalRegist"/>
     <addaction name="actionICP"/>
     <addaction name="actionRPS"/>
+    <addaction name="actionRunRPS"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -136,6 +137,11 @@
   <action name="actionColorBar">
    <property name="text">
     <string>配准结果显示</string>
+   </property>
+  </action>
+  <action name="actionRunRPS">
+   <property name="text">
+    <string>点配准</string>
    </property>
   </action>
  </widget>

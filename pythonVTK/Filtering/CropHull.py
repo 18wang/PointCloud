@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 import vtk
 import vtkmodules.vtkInteractionStyle
 import vtkmodules.vtkRenderingOpenGL2
+from vtkmodules.vtkCommonCore import vtkCommand
 from vtkmodules.vtkInteractionStyle import (
     vtkInteractorStyleTrackballCamera,
 )
@@ -41,8 +42,8 @@ class Mouse_Pointcloud_Selection(vtk.vtkInteractorStyleRubberBandPick):
         self.ren = render
         self.data = data
 
-        self.AddObserver(vtk.vtkCommand.PickEvent, self.PickEvent)
-        self.AddObserver(vtk.vtkCommand.KeyPressEvent, self.KeypressCallbackFunction)
+        self.AddObserver(vtkCommand.PickEvent, self.PickEvent)
+        self.AddObserver(vtkCommand.KeyPressEvent, self.KeypressCallbackFunction)
 
         self.area_picker = vtkRenderedAreaPicker()
         self.area_picker.AddObserver(vtk.vtkCommand.EndPickEvent, self.EndPickEventfunc)

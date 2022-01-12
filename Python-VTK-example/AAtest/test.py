@@ -25,7 +25,7 @@ def ExtractPatchesIds(parentCl,clipPts):
       for j in range(parentCl.GetNumberOfCells()):
          cellLine = ExtractSingleLine(parentCl,j)
 
-         locator = vtk.vtkPointLocator()
+         locator = vtkPointLocator()
          locator.SetDataSet(cellLine)
          locator.BuildLocator()
 

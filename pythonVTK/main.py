@@ -25,6 +25,7 @@ from IO.Open3DFileIO import readOpen3D
 from IO.PointCloudtoPolydata import PointCloudtoPolydata
 from IO.MeshOperations import MeshPoissonSample
 from Display.RendererDisplay import UpdateActor
+from Registration.RPSFunction import MouseInteractorICP
 
 
 #
@@ -83,6 +84,7 @@ class Ui_MainWindow(QMainWindow):
         self.sourcedata = []
         self.Mark = dict()                  # 类型标记
         self.transMatrix = np.identity(4)   # 配准矩阵
+        self.RPSStyle = None
 
         #-------------------------------------------------------------------
 
@@ -97,6 +99,7 @@ class Ui_MainWindow(QMainWindow):
         self.ui.actionGlobalRegist.triggered.connect(self.globalRegist)
         self.ui.actionICP.triggered.connect(self.ICP)
         self.ui.actionRPS.triggered.connect(self.RPS)
+        self.ui.actionRunRPS.triggered.connect(self.RunRPS)
 
         self.ui.actionColorBar.triggered.connect(self.colorBarDisplay)
         self.ui.actionClearDisplay.triggered.connect(self.clearDisplay)
@@ -225,8 +228,6 @@ class Ui_MainWindow(QMainWindow):
         self.pointcloud[txtIndex] = self.pointcloud[txtIndex].uniform_down_sample(
                                                                             downSample)
 
-
-
         t2 = time.time()
         print("原始点云下采样耗时", t2 - t1)
 
@@ -234,7 +235,6 @@ class Ui_MainWindow(QMainWindow):
 
         t3 = time.time()
         print("stl采样耗时", t3 - t2)
-
 
         result = GlobalRegistration(self.pointcloud[txtIndex], stlSample,
             voxel_size=voxel_size, distance_threshold=distance_threshold)
@@ -298,17 +298,46 @@ class Ui_MainWindow(QMainWindow):
         手动选点配准
         :return:
         """
+        stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
-        clickPos = self.GetInteractor().GetEventPosition()
+        # Set the custom type to use for interaction.
+        style = MouseInteractorICP([self.actor[stlIndex], self.actor[txtIndex]])
+        style.SetDefaultRenderer(self.ren)
 
-        locator = vtkPointLocator()
-        locator.SetDataSet(self.pointcloud[txtIndex])
-        locator.BuildLocator()
+        self.iren.SetInteractorStyle(style)
 
-        picker = vtkPropPicker()
-        picker.Pick(clickPos[0], clickPos[1], 0, self.GetDefaultRenderer())
+        self.RPSStyle = style
 
-        upstreamId = locator.FindClosestPoint()
+        return
+
+    def RunRPS(self):
+
+        selected = self.RPSStyle.getSelected()
+        print(selected)
+
+        import open3d as o3d
+
+
+        assert (len(picked_id_source) >= 3 and len(picked_id_target) >= 3)
+        assert (len(picked_id_source) == len(picked_id_target))
+        corr = np.zeros((len(picked_id_source), 2))
+        corr[:, 0] = picked_id_source
+        corr[:, 1] = picked_id_target
+
+        # estimate rough transformation using correspondences
+        print("Compute a rough transform using the correspondences given by user")
+        p2p = o3d.pipelines.registration.TransformationEstimationPointToPoint()
+        trans_init = p2p.compute_transformation(source, target,
+                                                o3d.utility.Vector2iVector(corr))
+
+        # point-to-point ICP for refinement
+        print("Perform point-to-point ICP refinement")
+        threshold = 0.03  # 3cm distance threshold
+        reg_p2p = o3d.pipelines.registration.registration_icp(
+            source, target, threshold, trans_init,
+            o3d.pipelines.registration.TransformationEstimationPointToPoint())
+        draw_registration_result(source, target, reg_p2p.transformation)
+        print("")
 
 
 

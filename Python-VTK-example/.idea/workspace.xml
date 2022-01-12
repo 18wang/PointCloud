@@ -2,20 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dca93d72-8748-4dbc-9985-2cf4c017eab6" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/Registration/RPSFunction.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../pythonVTK/testFile/大型零件选点配准.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AAtest/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/AAtest/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/Filtering/CropHull.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Filtering/CropHull.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/ProjectSrc/crop1.ply" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/ProjectSrc/crop1.ply" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistration.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.ui" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/GlobalRegistrationUI.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/MainForm.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/MainForm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/MainForm.ui" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/MainForm.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonVTK/Registration/RPSFunction.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/Registration/RPSFunction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../pythonVTK/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonVTK/test3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonVTK/testFile/test3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../python_pointcloud/open3d/stl_txt_ICP.py" beforeDir="false" afterPath="$PROJECT_DIR$/../python_pointcloud/open3d/stl_txt_ICP.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +68,9 @@
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Picking" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -94,6 +90,9 @@
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Picking" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -132,6 +131,9 @@
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ImplicitFunctions" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -151,6 +153,9 @@
       <module name="Python-VTK-example" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AAtest" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -193,6 +198,7 @@
       <workItem from="1641355726273" duration="1942000" />
       <workItem from="1641370381349" duration="1898000" />
       <workItem from="1641883235294" duration="8989000" />
+      <workItem from="1641949133404" duration="9915000" />
     </task>
     <servers />
   </component>
@@ -203,6 +209,7 @@
     <SUITE FILE_PATH="coverage/Python_VTK_example$ImplicitQuadric.coverage" NAME="ImplicitQuadric 覆盖结果" MODIFIED="1641361381841" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ImplicitFunctions" />
     <SUITE FILE_PATH="coverage/Python_VTK_example$ReadSTL.coverage" NAME="ReadSTL 覆盖结果" MODIFIED="1641260002723" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/IO" />
     <SUITE FILE_PATH="coverage/Python_VTK_example$VTKWithNumpy.coverage" NAME="VTKWithNumpy 覆盖结果" MODIFIED="1641253309634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Utilities" />
+    <SUITE FILE_PATH="coverage/Python_VTK_example$HighlightWithSilhouette.coverage" NAME="HighlightWithSilhouette 覆盖结果" MODIFIED="1641973568929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Picking" />
     <SUITE FILE_PATH="coverage/Python_VTK_example$test.coverage" NAME="test 覆盖结果" MODIFIED="1641370579804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/AAtest" />
     <SUITE FILE_PATH="coverage/Python_VTK_example$Curvatures.coverage" NAME="Curvatures 覆盖结果" MODIFIED="1641254149906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PolyData" />
     <SUITE FILE_PATH="coverage/Python_VTK_example$ReadPLY.coverage" NAME="ReadPLY 覆盖结果" MODIFIED="1641305307031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/IO" />

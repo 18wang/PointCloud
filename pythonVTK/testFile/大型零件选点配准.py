@@ -47,12 +47,14 @@ def demo_manual_registration():
     print("Demo for manual ICP")
     source = read_txt_uspd("../../../data/曲面6-删减噪点.txt")
     target = read_txt_uspd("../../../data/模型.txt")
+
     print("Visualization of two point clouds before manual alignment")
     draw_registration_result(source, target, np.identity(4))
 
     # pick points from two point clouds and builds correspondences
     picked_id_source = pick_points(source)
     picked_id_target = pick_points(target)
+
     assert (len(picked_id_source) >= 3 and len(picked_id_target) >= 3)
     assert (len(picked_id_source) == len(picked_id_target))
     corr = np.zeros((len(picked_id_source), 2))
