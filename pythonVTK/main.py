@@ -26,6 +26,7 @@ from IO.PointCloudtoPolydata import PointCloudtoPolydata
 from IO.MeshOperations import MeshPoissonSample
 from Display.RendererDisplay import UpdateActor
 from Registration.RPSFunction import MouseInteractorICP
+from Registration.RPSFunction import RPS
 
 
 #
@@ -57,6 +58,7 @@ from vtkmodules.vtkIOGeometry import (
     vtkOBJReader,
     vtkSTLReader,
 )
+from vtkmodules.vtkInteractionStyle import vtkInteractorStyleTrackballCamera
 from vtkmodules.vtkInteractionWidgets import vtkScalarBarWidget
 from vtkmodules.vtkRenderingAnnotation import vtkScalarBarActor
 from vtkmodules.vtkRenderingCore import (
@@ -300,6 +302,7 @@ class Ui_MainWindow(QMainWindow):
         """
         stlIndex = self.Mark[".stl"]
         txtIndex = self.Mark[".txt"]
+
         # Set the custom type to use for interaction.
         style = MouseInteractorICP([self.actor[stlIndex], self.actor[txtIndex]])
         style.SetDefaultRenderer(self.ren)
@@ -308,39 +311,43 @@ class Ui_MainWindow(QMainWindow):
 
         self.RPSStyle = style
 
+
+
         return
 
     def RunRPS(self):
+        """
+
+        :return:
+        """
+        # self.iren.SetInteractorStyle(vtkInteractorStyleTrackballCamera())
+
+
+        stlIndex = self.Mark[".stl"]
+        txtIndex = self.Mark[".txt"]
+        pointsNum = len(np.asarray(self.pointcloud[txtIndex].points))
+        stlSample = MeshPoissonSample(self.pointcloud[stlIndex], pointsNum, factor=1)
 
         selected = self.RPSStyle.getSelected()
         print(selected)
 
-        import open3d as o3d
+        trans = RPS(stlSample, self.pointcloud[txtIndex], selected[0], selected[1])
+        print(trans)
 
+        # 更新变换矩阵
+        self.transMatrix = trans
+        self.pointcloud[txtIndex].transform(self.transMatrix)
 
-        assert (len(picked_id_source) >= 3 and len(picked_id_target) >= 3)
-        assert (len(picked_id_source) == len(picked_id_target))
-        corr = np.zeros((len(picked_id_source), 2))
-        corr[:, 0] = picked_id_source
-        corr[:, 1] = picked_id_target
+        # 类型变换 PointCloud => polydata
+        self.polydata[txtIndex] = PointCloudtoPolydata(self.pointcloud[txtIndex])
 
-        # estimate rough transformation using correspondences
-        print("Compute a rough transform using the correspondences given by user")
-        p2p = o3d.pipelines.registration.TransformationEstimationPointToPoint()
-        trans_init = p2p.compute_transformation(source, target,
-                                                o3d.utility.Vector2iVector(corr))
+        # 更新Actor, 并显示
+        self.actor[txtIndex] = UpdateActor(self.ren, txtIndex, self.actor,
+                                           self.polydata[txtIndex])
+        self.ren.AddActor(self.actor[stlIndex])
 
-        # point-to-point ICP for refinement
-        print("Perform point-to-point ICP refinement")
-        threshold = 0.03  # 3cm distance threshold
-        reg_p2p = o3d.pipelines.registration.registration_icp(
-            source, target, threshold, trans_init,
-            o3d.pipelines.registration.TransformationEstimationPointToPoint())
-        draw_registration_result(source, target, reg_p2p.transformation)
-        print("")
-
-
-
+        self.ren.ResetCamera()
+        self.iren.Initialize()
 
     def cropHull(self):
         """

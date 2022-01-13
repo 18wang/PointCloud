@@ -1,3 +1,5 @@
+import numpy as np
+import open3d as o3d
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkCommonCore import vtkCommand, vtkMinimalStandardRandomSequence
 from vtkmodules.vtkCommonDataModel import vtkPointLocator
@@ -192,4 +194,78 @@ class MouseInteractorICP(vtkInteractorStyleTrackballCamera):
 
 
 
+def RPS(stlSample, pointData, stlSelected, pointSelected):
+    """
+    根据选定点坐标返回变换矩阵
+    :param stlSample:
+    :param pointData:
+    :param stlSelected:
+    :param pointSelected:
+    :return:
+    """
+    pointSelected = np.asarray(pointSelected).T
+    stlSelected = np.asarray(stlSelected).T
 
+    trans = umeyama(pointSelected, stlSelected)
+
+    print("手动选点粗配准矩阵：",trans, '\n')
+
+    threshold = 0.03  # 3cm distance threshold
+    reg_p2p = o3d.pipelines.registration.registration_icp(
+        pointData, stlSample, threshold, trans,
+        o3d.pipelines.registration.TransformationEstimationPointToPoint())
+
+    return reg_p2p.transformation
+
+
+def umeyama(A, B):
+    """
+    根据一组对应点对变换，求取粗变换矩阵
+    :param A:
+    :param B:
+    :return:
+    """
+
+    assert A.shape == B.shape
+
+    num_rows, num_cols = A.shape
+    if num_rows != 3:
+        raise Exception(f"matrix A is not 3xN, it is {num_rows}x{num_cols}")
+
+    num_rows, num_cols = B.shape
+    if num_rows != 3:
+        raise Exception(f"matrix B is not 3xN, it is {num_rows}x{num_cols}")
+
+    # find mean column wise
+    centroid_A = np.mean(A, axis=1)
+    centroid_B = np.mean(B, axis=1)
+
+    # ensure centroids are 3x1
+    centroid_A = centroid_A.reshape(-1, 1)
+    centroid_B = centroid_B.reshape(-1, 1)
+
+    # subtract mean
+    Am = A - centroid_A
+    Bm = B - centroid_B
+
+    H = Am @ np.transpose(Bm)
+
+    # sanity check
+    # if linalg.matrix_rank(H) < 3:
+    #    raise ValueError("rank of H = {}, expecting 3".format(linalg.matrix_rank(H)))
+
+    # find rotation
+    U, S, Vt = np.linalg.svd(H)
+    R = Vt.T @ U.T
+
+    # special reflection case
+    if np.linalg.det(R) < 0:
+        print("det(R) < R, reflection detected!, correcting for it ...")
+        Vt[2, :] *= -1
+        R = Vt.T @ U.T
+
+    t = -R @ centroid_A + centroid_B
+
+    trans = np.concatenate((R, t.reshape(-1, 1)), axis=1)
+    trans = np.concatenate((trans, np.reshape([0, 0, 0, 1], (1, -1))), axis=0)
+    return trans
