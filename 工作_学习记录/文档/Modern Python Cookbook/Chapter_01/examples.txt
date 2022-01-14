@@ -1,0 +1,508 @@
+"""Python Cookbook
+
+Chapter 1, Examples from the text.
+
+•	Working with large and small integers
+•	Choosing between float, decimal, and fraction
+•	Choosing between true division and floor division
+•	Rewriting an immutable string
+•	String parsing with regular expressions
+•	Building complex strings with f"strings"
+•	Building complex strings from lists of characters
+•	Using the Unicode characters that aren't on our keyboards
+•	Encoding strings – creating ASCII and UTF-8 bytes
+•	Decoding bytes – how to get proper characters from some bytes
+    Portions of this example are in ``examples_network.txt``
+•	Using tuples of items
+•	Using NamedTuples to simplify item access in tuples
+
+Since these are all examples of the REPL, it's easier to
+show this is a long interaction.
+
+"""
+
+
+# Recipe 1
+# Working with large and small integers
+>>> 2
+2
+
+>>> 0xff
+255
+
+>>> b'\xfe'
+b'\xfe'
+
+>>> 2**2048  # doctest: +ELLIPSIS
+323...656
+
+>>> len(str(2**2048))
+617
+
+>>> import math
+>>> math.factorial(52)
+80658175170943878571660636856403766975289505440883277824000000000000
+
+>>> import math
+>>> math.factorial(52)
+80658175170943878571660636856403766975289505440883277824000000000000
+
+>>> import sys
+>>> import math
+>>> math.log(sys.maxsize, 2)
+63.0
+>>> sys.int_info
+sys.int_info(bits_per_digit=30, sizeof_digit=4)
+
+# The following are dependent on Python version and platform.
+>>> id(1)  # doctest: +SKIP
+4464028000
+>>> id(2)  # doctest: +SKIP
+4464028032
+>>> a=1+1
+>>> id(a)  # doctest: +SKIP
+4464028032
+
+>>> len(str(2**2048))
+617
+
+>>> xor = 0b0011 ^ 0b0101
+>>> bin(xor)
+'0b110'
+
+>>> composite_byte = 0b01101100
+>>> bottom_6_mask =  0b00111111
+>>> bin(composite_byte >> 6)
+'0b1'
+>>> bin(composite_byte & bottom_6_mask)
+'0b101100'
+
+
+# Recipe 2
+# Choosing between float, decimal, and fraction
+>>> from decimal import Decimal
+>>> from decimal import Decimal
+>>> tax_rate = Decimal('7.25')/Decimal(100)
+>>> purchase_amount = Decimal('2.95')
+>>> tax_rate * purchase_amount
+Decimal('0.213875')
+
+>>> penny=Decimal('0.01')
+>>> total_amount = purchase_amount + tax_rate*purchase_amount
+>>> total_amount.quantize(penny)
+Decimal('3.16')
+
+>>> import decimal
+>>> total_amount.quantize(penny, decimal.ROUND_UP)
+Decimal('3.17')
+
+>>> from fractions import Fraction
+>>> from fractions import Fraction
+>>> sugar_cups = Fraction('2.5')
+>>> scale_factor = Fraction(5/8)
+>>> sugar_cups * scale_factor
+Fraction(25, 16)
+
+>>> Fraction(24,16)
+Fraction(3, 2)
+
+>>> (19/155)*(155/19)
+0.9999999999999999
+
+>>> answer= (19/155)*(155/19)
+>>> round(answer, 3)
+1.0
+
+>>> 1-answer
+1.1102230246251565e-16
+
+>>> float(total_amount)
+3.163875
+>>> float(sugar_cups * scale_factor)
+1.5625
+
+>>> Fraction(19/155)
+Fraction(8832866365939553, 72057594037927936)
+>>> Decimal(19/155)
+Decimal('0.12258064516129031640279123394066118635237216949462890625')
+
+>>> 8.066e+67
+8.066e+67
+
+>>> 6737037547376141/2**53*2**226
+8.066e+67
+
+>>> import math
+>>> math.frexp(8.066E+67)
+(0.7479614202861186, 226)
+
+>>> (19/155)*(155/19) == 1.0
+False
+>>> math.isclose((19/155)*(155/19), 1)
+True
+
+>>> math.sqrt(-2)
+Traceback (most recent call last):
+  File "/Users/slott/miniconda3/envs/cookbook/lib/python3.8/doctest.py", line 1328, in __run
+    compileflags, 1), test.globs)
+  File "<doctest examples.txt[63]>", line 1, in <module>
+    math.sqrt(-2)
+ValueError: math domain error
+
+>>> import cmath
+>>> cmath.sqrt(-2)
+1.4142135623730951j
+
+
+# Recipe 3
+# Choosing between true division and floor division
+>>> total_seconds = 7385
+>>> hours = total_seconds//3600
+>>> remaining_seconds = total_seconds % 3600
+>>> minutes = remaining_seconds//60
+>>> seconds = remaining_seconds % 60
+>>> hours, minutes, seconds
+(2, 3, 5)
+
+>>> total_seconds = 7385
+>>> hours, remaining_seconds = divmod(total_seconds, 3600)
+>>> minutes, seconds = divmod(remaining_seconds, 60)
+>>> hours, minutes, seconds
+(2, 3, 5)
+
+>>> total_seconds = 7385
+>>> hours = total_seconds / 3600
+>>> round(hours,4)
+2.0514
+
+>>> from fractions import Fraction
+>>> total_seconds = Fraction(7385)
+>>> hours = total_seconds / 3600
+>>> hours
+Fraction(1477, 720)
+
+>>> round(float(hours),4)
+2.0514
+
+>>> 7358.0 // 3600.0
+2.0
+
+>>> from __future__ import division
+
+
+# Recipe 4
+# Rewriting an immutable string
+>>> title = "Recipe 5: Rewriting, and the Immutable String"
+>>> title[8]= ''
+Traceback (most recent call last):
+  File "/Users/slott/miniconda3/envs/cookbook/lib/python3.8/doctest.py", line 1328, in __run
+    compileflags, 1), test.globs)
+  File "<doctest examples.txt[86]>", line 1, in <module>
+    title[8]= ''
+TypeError: 'str' object does not support item assignment
+
+>>> title = "Recipe 5: Rewriting, and the Immutable String"
+
+>>> colon_position = title.index(':')
+
+>>> discard, post_colon = title[:colon_position], title[colon_position+1:]
+>>> discard
+'Recipe 5'
+>>> post_colon
+' Rewriting, and the Immutable String'
+
+>>> pre_colon_text, _, post_colon_text = title.partition(':')
+>>> pre_colon_text
+'Recipe 5'
+>>> post_colon_text
+' Rewriting, and the Immutable String'
+
+>>> post_colon_text = post_colon_text.replace(' ', '_')
+>>> post_colon_text = post_colon_text.replace(',', '_')
+>>> post_colon_text
+'_Rewriting__and_the_Immutable_String'
+
+>>> from string import whitespace, punctuation
+>>> for character in whitespace + punctuation:
+...    post_colon_text = post_colon_text.replace(character, '_')
+>>> post_colon_text
+'_Rewriting__and_the_Immutable_String'
+
+>>> post_colon_text = post_colon_text.lower()
+
+>>> post_colon_text = post_colon_text.strip('_')
+>>> while '__' in post_colon_text:
+...   post_colon_text = post_colon_text.replace('__', '_')
+
+# The following aare dependent on Python version and platform.
+>>> id(post_colon_text)  # doctest: +SKIP
+140441370690448
+>>> post_colon_text = post_colon_text.replace('_','-')
+>>> id(post_colon_text)  # doctest: +SKIP
+140441370690064
+
+>>> 'some word'.isnumeric()
+False
+>>> '1298'.isnumeric()
+True
+
+
+# Recipe 5
+# String parsing with regular expressions
+>>> ingredient = "Kumquat: 2 cups"
+
+>>> import re
+>>> pattern_text = r'(\w+):\s+(\d+)\s+(\w+)'
+
+>>> pattern = re.compile(pattern_text)
+>>> match = pattern.match(ingredient)
+>>> match is None
+False
+>>> match.groups()
+('Kumquat', '2', 'cups')
+
+>>> match.group(1)
+'Kumquat'
+>>> match.group(2)
+'2'
+>>> match.group(3)
+'cups'
+
+>>> ingredient_pattern = re.compile(
+... r'(?P<ingredient>[\w\s]+):\s+' # name of the ingredient up to the ":"
+... r'(?P<amount>\d+)\s+'          # amount, all digits up to a space
+... r'(?P<unit>\w+)'               # units, alphanumeric characters
+... )
+
+>>> ingredient2 = "Pickled Beets: 1 can"
+>>> m = ingredient_pattern.match(ingredient2)
+>>> m.groups()
+('Pickled Beets', '1', 'can')
+
+>>> ingredient_pattern_x = re.compile(r'''
+... (?P<ingredient>[\w\s]+):\s+ # name of the ingredient up to the ":"'
+... (?P<amount>\d+)\s+          # amount, all digits up to a space'
+... (?P<unit>\w+)               # units, alphanumeric characters
+... ''', re.X)
+>>> ingredient2 = "Martini Olives: 2 count"
+>>> m_x = ingredient_pattern_x.match(ingredient2)
+>>> m_x.groups()
+('Martini Olives', '2', 'count')
+
+# Recipe 6
+# Building complex strings with f"strings"
+>>> id = "IAD"
+>>> location = "Dulles Intl Airport"
+>>> max_temp = 32
+>>> min_temp = 13
+>>> precipitation = 0.4
+
+>>> f'{id:3s}  : {location:19s} :  {max_temp:3d} / {min_temp:3d} / {precipitation:5.2f}'
+'IAD  : Dulles Intl Airport :   32 /  13 /  0.40'
+
+>>> value = 2**12-1
+>>> f'{value=} {2**7+1=}'
+'value=4095 2**7+1=129'
+
+>>> data = dict(
+... id=id, location=location, max_temp=max_temp,
+... min_temp=min_temp, precipitation=precipitation
+... )
+>>> '{id:3s}  : {location:19s} :  {max_temp:3d} / {min_temp:3d} / {precipitation:5.2f}'.format_map(data)
+'IAD  : Dulles Intl Airport :   32 /  13 /  0.40'
+
+>>> class Summary:
+...     def __init__(self, id, location, min_temp, max_temp, precipitation):
+...         self.id= id
+...         self.location= location
+...         self.min_temp= min_temp
+...         self.max_temp= max_temp
+...         self.precipitation= precipitation
+...     def __str__(self):
+...         return '{id:3s}  : {location:19s} :  {max_temp:3d} / {min_temp:3d} / {precipitation:5.2f}'.format_map(
+...             vars(self)
+...         )
+
+>>> s= Summary('IAD', 'Dulles Intl Airport', 13, 32, 0.4)
+>>> print(s)
+IAD  : Dulles Intl Airport :   32 /  13 /  0.40
+
+
+# Recipe 7
+# Building complex strings from lists of characters
+>>> title = "Recipe 5: Rewriting an Immutable String"
+
+>>> from string import whitespace, punctuation
+
+>>> title_list = list(title)
+>>> colon_position = title_list.index(':')
+>>> del title_list[:colon_position+1]
+
+>>> for position in range(len(title_list)):
+...    if title_list[position] in whitespace+punctuation:
+...        title_list[position]= '_'
+
+>>> title = ''.join(title_list)
+>>> title
+'_Rewriting_an_Immutable_String'
+
+>>> title_list.insert(0, 'prefix')
+>>> ''.join(title_list)
+'prefix_Rewriting_an_Immutable_String'
+
+>>> title = "Recipe 5: Rewriting an Immutable String"
+>>> title.translate({ord(c): '_' for c in whitespace+punctuation})
+'Recipe_5__Rewriting_an_Immutable_String'
+
+# Recipe 8
+# Using the Unicode characters that aren't on our keyboards
+>>> 'You Rolled \u2680'
+'You Rolled ⚀'
+>>> 'You drew \U0001F000'
+'You drew 🀀'
+>>> 'Discard \N{MAHJONG TILE RED DRAGON}'
+'Discard 🀄'
+
+>>> r"\w+"
+'\\w+'
+
+
+# Recipe 9
+# Encoding strings – creating ASCII and UTF-8 bytes
+>>> with open('data/some_file.txt', 'w', encoding='utf-8') as output:
+...     print( 'You drew \U0001F000', file=output )
+>>> with open('data/some_file.txt', 'r', encoding='utf-8') as input:
+...     text = input.read()
+>>> text
+'You drew 🀀\n'
+
+>>> string_bytes = 'You drew \U0001F000'.encode('utf-8')
+>>> string_bytes
+b'You drew \xf0\x9f\x80\x80'
+
+>>> 'You drew \U0001F000'.encode('ascii')
+Traceback (most recent call last):
+  File "/Users/slott/miniconda3/envs/cookbook/lib/python3.8/doctest.py", line 1328, in __run
+    compileflags, 1), test.globs)
+  File "<doctest examples.txt[152]>", line 1, in <module>
+    'You drew \U0001F000'.encode('ascii')
+UnicodeEncodeError: 'ascii' codec can't encode character '\U0001f000' in position 9: ordinal not in range(128)
+
+
+# Recipe 10
+# Decoding bytes – how to get proper characters from some bytes
+# Parts of this require network access, see examples_network.txt.
+
+# This uses a saved sample page.
+# It provides a consistent result for testing purposes.
+
+>>> from pathlib import Path
+>>> sample = Path.cwd()/"Chapter_01"/"National Weather Service Text Product Display.html"
+>>> document = sample.read_text()
+
+>>> import re
+>>> title_pattern = re.compile(
+...     r"BULLETIN - IMMEDIATE BROADCAST REQUESTED\n(.*?)\nThe National Weather Service",
+...     re.MULTILINE|re.DOTALL)
+>>> title_pattern.search(document)
+<re.Match object; span=(3123, 3281), match='BULLETIN - IMMEDIATE BROADCAST REQUESTED\nSpecial>
+>>> match = title_pattern.search(document)
+>>> match.group(0)
+'BULLETIN - IMMEDIATE BROADCAST REQUESTED\nSpecial Marine Warning\nNational Weather Service Wakefield VA\n1245 AM EDT Fri Nov 1 2019\n\nThe National Weather Service'
+
+
+# Recipe 11
+# Using tuples of items
+>>> ingredient = "Kumquat: 2 cups"
+>>> import re
+>>> ingredient_pattern = re.compile(r'([\w\s]+):\s+(\d+)\s+(\w+)')
+>>> match = ingredient_pattern.match(ingredient)
+>>> match.groups()
+('Kumquat', '2', 'cups')
+
+>>> ingredient2 = "Pickled Beets: 1 can"
+>>> match2 = ingredient_pattern.match(ingredient2)
+>>> match2.groups()
+('Pickled Beets', '1', 'can')
+
+>>> ingredient_pattern_named = re.compile(r'(?P<ingredient>[\w\s]+):\s+(?P<amount>\d+)\s+(?P<unit>\w+)')
+>>> match = ingredient_pattern_named.match(ingredient)
+>>> match.groups()
+('Kumquat', '2', 'cups')
+
+>>> ingredient2 = "Pickled Beets: 1 can"
+>>> match2 = ingredient_pattern_named.match(ingredient2)
+>>> match2.groups()
+('Pickled Beets', '1', 'can')
+
+>>> from fractions import Fraction
+>>> my_data = ('Rice', Fraction(1/4), 'cups')
+>>> one_tuple = ('item', )
+>>> len(one_tuple)
+1
+
+>>> 355,
+(355,)
+
+>>> my_data[1]
+Fraction(1, 4)
+
+>>> ingredient, amount, unit = my_data
+>>> ingredient
+'Rice'
+>>> unit
+'cups'
+
+>>> t = ('Kumquat', '2', 'cups')
+
+>>> len(t)
+3
+
+>>> t.count('2')
+1
+
+>>> t.index('cups')
+2
+>>> t[2]
+'cups'
+
+>>> t.index('Rice')
+Traceback (most recent call last):
+  File "/Users/slott/miniconda3/envs/cookbook/lib/python3.8/doctest.py", line 1328, in __run
+    compileflags, 1), test.globs)
+  File "<doctest examples.txt[181]>", line 1, in <module>
+    t.index('Rice')
+ValueError: tuple.index(x): x not in tuple
+
+
+# Recipe 12
+# Using NamedTules to simplify tuples
+>>> item = ('Kumquat', '2', 'cups')
+>>> Fraction(item[1])
+Fraction(2, 1)
+
+>>> from typing import NamedTuple
+>>> class Ingredient(NamedTuple):
+...     ingredient: str
+...     amount: str
+...     unit: str
+
+>>> item_2 = Ingredient('Kumquat', '2', 'cups')
+>>> Fraction(item_2.amount)
+Fraction(2, 1)
+>>> f"Use {item_2.amount} {item_2.unit} fresh {item_2.ingredient}"
+'Use 2 cups fresh Kumquat'
+>>> item_2
+Ingredient(ingredient='Kumquat', amount='2', unit='cups')
+
+>>> class IngredientF(NamedTuple):
+...     ingredient: str
+...     amount: Fraction
+...     unit: str
+
+>>> item_3 = IngredientF('Kumquat', Fraction('2'), 'cups')
+>>> item_3
+IngredientF(ingredient='Kumquat', amount=Fraction(2, 1), unit='cups')
+
+>>> f'{item_3.ingredient} doubled: {item_3.amount*2}'
+'Kumquat doubled: 4'

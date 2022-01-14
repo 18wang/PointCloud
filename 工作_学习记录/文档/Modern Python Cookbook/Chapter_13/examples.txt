@@ -1,0 +1,114 @@
+"""Python Cookbook
+
+Chapter 13, Examples from the text.
+
+•	Finding configuration files
+•	Using YAML for configuration files
+•	Using Python for configuration files
+•	Using class-as-namespace for configuration values
+•	Designing scripts for composition
+•	Using logging for control and audit output
+
+"""
+
+# Finding configuration files
+
+>>> import collections
+>>> config = collections.ChainMap(
+...     {'another_setting': 2},
+...     {'some_setting': 1},
+...     {'some_setting': 'Default Value',
+...      'another_setting': 'Another Default',
+...      'some_option': 'Built-In Choice'})
+
+
+>>> config['another_setting']
+2
+>>> config['some_setting']
+1
+>>> config['some_option']
+'Built-In Choice'
+
+
+# Using YAML for configuration files
+
+
+>>> import yaml
+>>> yaml_text = '''
+... ---
+... id: 1
+... text: "Some Words."
+... ---
+... id: 2
+... text: "Different Words."
+... '''
+
+>>> document_iterator = yaml.load_all(yaml_text, Loader=yaml.SafeLoader)
+>>> document_1 = next(document_iterator)
+>>> document_1['id']
+1
+>>> document_2 = next(document_iterator)
+>>> document_2['text']
+'Different Words.'
+
+
+>>> mapping_text = '''
+... ? !!python/tuple ["a", "b"]
+... : "value"
+... '''
+>>> yaml.load(mapping_text, Loader=yaml.UnsafeLoader)
+{('a', 'b'): 'value'}
+
+
+>>> import yaml
+>>> set_text = '''
+... document:
+...     id: 3
+...     data_values:
+...       !!set
+...       ? some
+...       ? more
+...       ? words
+... '''
+
+>>> some_document = yaml.load(set_text, Loader=yaml.SafeLoader)
+>>> some_document['document']['id']
+3
+>>> some_document['document']['data_values'] == {'some', 'more', 'words'}
+True
+
+
+>>> import yaml
+>>> yaml_text = '''
+... !!omap
+... - key1: string value
+... - numerator: 355
+... - denominator: 113
+... '''
+
+
+>>> yaml.load(yaml_text, Loader=yaml.SafeLoader)
+[('key1', 'string value'), ('numerator', 355), ('denominator', 113)]
+
+
+
+
+# Using class-as-namespace for configuration values
+
+>>> from pprint import pprint
+>>> import Chapter_13.ch13_r04
+>>> configuration = Chapter_13.ch13_r04.load_config_module(
+...     'Chapter_13.settings.Chesapeake')
+>>> configuration.__doc__.strip()
+'Weather for Chesapeake Bay'
+>>> configuration.query
+{'mz': ['ANZ532']}
+>>> configuration.url['netloc']
+'forecast.weather.gov'
+
+>>> print(configuration)
+<class 'Chapter_13.settings.Chesapeake'>
+>>> pprint(vars(configuration))
+mappingproxy({'__doc__': '\n    Weather for Chesapeake Bay\n    ',
+              '__module__': 'Chapter_13.settings',
+              'query': {'mz': ['ANZ532']}})

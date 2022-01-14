@@ -1,0 +1,127 @@
+"""Python Cookbook
+
+Chapter 4, Examples from the text.
+
+•	Choosing a data structure
+•	Building lists – literals, appending, and comprehensions
+•	Slicing and dicing a list
+•	Deleting from a list – deleting, removing, popping, and filtering
+•	Writing list-related type hints
+•	Reversing a copy of a list
+•	Using set methods and operators
+•	Removing items from a set – remove(), pop(), and difference
+•	Writing set-related type hints
+
+Note: This depends on output from other examples.
+"""
+
+The following depend in other examples producing files
+of known sizes. Changes to other examples will lead to
+changes here.
+
+# Building lists – literals, appending, and comprehensions
+
+>>> sieve = [True for i in range(100)]
+>>> sieve[0] = sieve[1] = False
+>>> for p in range(100):
+...     if sieve[p]:
+...         for n in range(p*2, 100, p):
+...             sieve[n] = False
+>>> prime = [p for p in range(100) if sieve[p]]
+>>> prime
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+
+
+# Using set methods and operators
+
+>>> a = "string"
+>>> hash(a)  # doctest: +SKIP
+4964286962312962439
+>>> b = ["list", "of", "strings"]
+
+>>> hash(b)  # doctest: +IGNORE_EXCEPTION_DETAIL
+Traceback (most recent call last):
+  File "<input>", line 1, in <module>
+TypeError: unhashable type: 'list'
+
+>>> import sys
+>>> v1 = 7
+>>> v2 = 7+sys.hash_info.modulus
+>>> v1
+7
+>>> v2
+2305843009213693958
+>>> hash(v1)
+7
+>>> hash(v2)
+7
+>>> s = {v1, v2}
+>>> sorted(s)
+[7, 2305843009213693958]
+>>> v3 = 7 + 2*sys.hash_info.modulus
+>>> hash(v3)
+7
+
+>>> collection = {1}
+
+>>> collection
+{1}
+>>> item = 3
+>>> collection.union({item})
+{1, 3}
+>>> collection
+{1}
+
+>>> collection = collection | {item}
+>>> collection
+{1, 3}
+
+>>> collection.update({4})
+>>> collection
+{1, 3, 4}
+
+>>> to_be_ignored = {'IP: 0.0.0.0', 'IP: 1.2.3.4'}
+
+# Removing items from a set – remove(), pop(), and difference
+
+>>> to_be_ignored = {'IP: 0.0.0.0', 'IP: 1.2.3.4'}
+>>> matches = {'IP: 111.222.111.222', 'IP: 1.2.3.4'}
+>>> matches - to_be_ignored
+{'IP: 111.222.111.222'}
+>>> matches.difference(to_be_ignored)
+{'IP: 111.222.111.222'}
+>>> matches.difference(['IP: 0.0.0.0', 'IP: 1.2.3.4'])
+{'IP: 111.222.111.222'}
+
+>>> matches_copy = matches.copy()
+>>> matches_copy.remove('IP: 1.2.3.4')
+>>> matches_copy
+{'IP: 111.222.111.222'}
+>>> matches_copy.remove('IP: 0.0.0.0')
+Traceback (most recent call last):
+  File "/Applications/PyCharm CE.app/Contents/plugins/python-ce/helpers/pycharm/docrunner.py", line 138, in __run
+    exec(compile(example.source, filename, "single",
+  File "<doctest examples.txt[37]>", line 1, in <module>
+    matches_copy.remove('IP: 0.0.0.0')
+KeyError: 'IP: 0.0.0.0'
+
+>>> valid_matches = matches.copy()
+>>> valid_matches.difference_update(to_be_ignored)
+>>> valid_matches
+{'IP: 111.222.111.222'}
+
+>>> valid_matches = matches.copy()
+>>> for item in to_be_ignored:
+...    if item in valid_matches:
+...        valid_matches.remove(item)
+>>> valid_matches
+{'IP: 111.222.111.222'}
+
+>>> valid_matches = matches.copy()
+>>> for item in to_be_ignored:
+...    try:
+...        valid_matches.remove(item)
+...    except KeyError:
+...        pass
+>>> valid_matches
+{'IP: 111.222.111.222'}

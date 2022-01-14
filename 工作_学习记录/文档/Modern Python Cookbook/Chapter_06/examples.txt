@@ -1,0 +1,117 @@
+"""Python Cookbook
+
+Chapter 6, Examples from the text.
+
+
+•	Using features of the print() function
+•	Using input() and getpass() for user input
+•	Debugging with f"{value=}" strings
+•	Using argparse to get command-line input
+•	Using cmd for creating command-line applications
+•	Using the OS environment settings
+
+Note: Output from this is used in Chapter 4 and Chapter 9 examples.
+
+This has Darwin/Linux examples. For Windows, the output will
+be different.
+"""
+
+# Using features of the print() function
+
+>>> print("Hello, world.")
+Hello, world.
+
+>>> count = 9973
+>>> print("Final count", count)
+Final count 9973
+
+>>> import sys
+>>> print("Red Alert!", file=sys.stderr)
+
+>>> from pathlib import Path
+>>> target_path = Path("data")/"extra_detail.log"
+>>> with target_path.open('w', encoding='utf-8') as target_file:
+...     print("Some detailed output", file=target_file)
+...     print("Ordinary log")
+Ordinary log
+
+# Using input() and getpass() for user input
+
+>>> import os
+>>> PID = os.getpid()
+
+###
+### The following tests may need to be skipped if you are using Windows.
+### Adding  # doctest: +SKIP to each '>>>' line will skip running the test.
+###
+
+>>> import subprocess
+>>> status = subprocess.run(["ps", str(PID)], check=True, text=True)  # doctest: +ELLIPSIS
+>>> status  # doctest: +ELLIPSIS
+CompletedProcess(args=['ps', ...], returncode=0)
+
+### For Windows, the following will produce different output.
+### Adding  # doctest: +SKIP to the '...' line will skip running the test.
+
+>>> status = subprocess. run(
+...     ["tasklist", "/fi", f'"PID eq {PID}"'], check=True, text=True)
+Traceback (most recent call last):
+   ...
+FileNotFoundError: [Errno 2] No such file or directory: 'tasklist'
+
+###
+### The preceding tests may need to be skipped if you are using Windows.
+###
+
+
+# Debugging with f"{value=}" strings
+
+>>> import statistics
+>>> size = [2353, 2889, 2195, 3094,
+... 725, 1099, 690, 1207, 926,
+... 758, 615, 521, 1320]
+
+>>> mean_size = statistics.mean(size)
+>>> std_size = statistics.stdev(size)
+>>> sig1 = round(mean_size + std_size, 1)
+>>> [x for x in size if x > sig1]
+[2353, 2889, 3094]
+
+>>> print(
+...     f"{mean_size=:.2f}, {std_size=:.2f}"
+... )
+mean_size=1414.77, std_size=901.10
+
+>>> print(
+...     f"{mean_size=:.2f}, {std_size=:.2f}, "
+...     f"{mean_size+2*std_size=:.2f}"
+... )
+mean_size=1414.77, std_size=901.10, mean_size+2*std_size=3216.97
+
+# Using argparse to get command-line input
+
+>>> import argparse
+>>> from typing import List
+>>> import sys
+>>> import platform
+
+>>> def get_options(argv: List[str] = sys.argv[1:]) -> argparse.Namespace:
+...     parser = argparse.ArgumentParser()
+...     parser.add_argument('file', nargs='*')
+...     options = parser.parse_args(argv)
+...     if platform.system() == "Windows":
+...         options.file = list(
+...             name
+...             for wildcard in options.file
+...             for name in Path().glob(wildcard))
+...     return options
+
+>>> options = get_options(['Chapter_06/*.py'])
+>>> options
+Namespace(file=['Chapter_06/*.py'])
+
+>>> from pathlib import Path
+>>> options = argparse.Namespace(file=["Chapter_06/*.py"])
+>>> list(name for wildcard in options.file for name in Path().glob(wildcard))  # doctest: +ELLIPSIS
+[...]
+

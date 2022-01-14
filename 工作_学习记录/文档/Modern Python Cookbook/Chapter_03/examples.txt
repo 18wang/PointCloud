@@ -1,0 +1,89 @@
+"""Python Cookbook
+
+Chapter 3, Examples from the text.
+
+Note: Output from these examples is used in Chapter 4 examples.
+
+•	Function parameters and type hints
+•	Designing functions with optional parameters
+•	Type hints for optional parameters
+•	Using super flexible keyword parameters
+•	Forcing keyword-only arguments with the * separator
+•	Defining position-only parameters with the / separator
+•	Writing more complex types of function parameters
+•	Picking an order for parameters based on partial functions
+•	Writing clear documentation strings with RST markup
+•	Designing recursive functions around Python's stack limits
+•	Writing reusable scripts with the script library switch
+
+This includes a few interactive examples
+"""
+
+
+
+# Function parameters and type hints
+>>> def fibo(n: int) -> int:
+...     if n <= 1: return 1
+...     return fibo(n-1)+fibo(n-2)
+>>> fibo(6)
+13
+
+# Designing functions with optional parameters
+
+
+# Defining position-only parameters with the / separator
+
+>>> import math
+>>> math.sin(x=0.5)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: sin() takes no keyword arguments
+
+
+# Recipe 9
+>>> from math import sin, cos, asin, sqrt, radians
+>>> MI = 3959
+>>> NM = 3440
+>>> KM = 6372
+
+>>> def haversine(lat_1: float, lon_1: float,
+...     lat_2: float, lon_2: float, R: float) -> float:
+...     """Distance between points.
+...
+...     R is Earth's radius.
+...     R=MI computes in miles. Default is nautical miles.
+...
+...     >>> round(haversine(36.12, -86.67, 33.94, -118.40, R=6372.8), 5)
+...     2887.25995
+...     """
+...     Δ_lat = radians(lat_2) - radians(lat_1)
+...     Δ_lon = radians(lon_2) - radians(lon_1)
+...     lat_1 = radians(lat_1)
+...     lat_2 = radians(lat_2)
+...
+...     a = sin(Δ_lat/2)**2 + cos(lat_1)*cos(lat_2)*sin(Δ_lon/2)**2
+...     c = 2*asin(sqrt(a))
+...
+...     return R * c
+
+>>> round(haversine(36.12, -86.67, 33.94, -118.40, R=6372.8), 5)
+2887.25995
+
+>>> def nm_haversine(*args):
+...     return haversine(*args, R=NM)
+
+>>> round(nm_haversine(36.12, -86.67, 33.94, -118.40), 2)
+1558.53
+
+>>> round(nm_haversine(36.12, -86.67, 33.94, -118.40), 2)
+1558.53
+
+>>> def Twc(T, V):
+...     """Wind Chill Temperature."""
+...     if V < 4.8 or T > 10.0:
+...         raise ValueError("V must be over 4.8 kph, T must be below 10°C")
+...     return 13.12 + 0.6215*T - 11.37*V**0.16 + 0.3965*T*V**0.16
+
+>>> round(Twc(-10, 25), 1)
+-18.8
+

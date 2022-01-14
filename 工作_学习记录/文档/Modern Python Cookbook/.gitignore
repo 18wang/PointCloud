@@ -1,0 +1,8 @@
+
+*.pyc
+.idea/*
+.mypy_cache/*
+.tox/*
+backup/*
+*.cert
+*.key
