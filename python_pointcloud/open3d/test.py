@@ -1,19 +1,20 @@
-def majorityElement(A, N):
-    # Your code here
+import os, time
+from multiprocessing import Pipe, Process
 
-    dict_count = dict()
 
-    max = 1
-    result = A[1]
-    for i in A:
-        if dict_count.get(i):
-            dict_count[i] = dict_count[i] + 1
-            if dict_count[i] > max:
-                max = dict_count[i]
-                result = i
-        else:
-            dict_count[i] = 1
+# 进程函数
+def func(name):
+    time.sleep(1)
+    print('父进程的id为:', os.getppid(), "--------", '子进程的id为:', os.getpid())
 
-    return result, max
 
-print(majorityElement([1, 2], 2))
+# 创建五个进程
+if __name__ == '__main__':
+    job = []
+    for i in range(5):
+        p = Process(target=func, args=(i,))
+        # 把新的进程添加到列表里
+        job.append(p)
+        p.start()
+    for i in job:
+        i.join()
